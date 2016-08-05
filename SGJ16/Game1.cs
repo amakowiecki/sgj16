@@ -12,12 +12,14 @@ namespace SGJ16
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        public static Point DisplaySize { get { return new Point(800, 480); } }
+        public static Point DisplaySize { get { return new Point(1200, 850); } }
 
         KeyboardInput keyboard;
 
         PlayerInput p1Input;
         PlayerInput p2Input;
+
+        Texture2D sample;
 
         public Game1()
         {
@@ -26,6 +28,7 @@ namespace SGJ16
 
             graphics.PreferredBackBufferWidth = DisplaySize.X;
             graphics.PreferredBackBufferHeight = DisplaySize.Y;
+            //graphics.IsFullScreen = true;
 
             IsMouseVisible = true;
 
@@ -74,6 +77,8 @@ namespace SGJ16
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            sample = Content.Load<Texture2D>("pocisk");
 
             // TODO: use this.Content to load your game content here
         }
@@ -125,7 +130,11 @@ namespace SGJ16
                 GraphicsDevice.Clear(Color.DarkSalmon);
             }
 
-            // TODO: Add your drawing code here
+            spriteBatch.Begin();
+
+            spriteBatch.Draw(sample, DisplaySize.ToVector2() / 2 - new Vector2(sample.Width, sample.Height), Color.White * 0.5f);
+
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
