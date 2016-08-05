@@ -12,18 +12,27 @@ namespace SGJ16
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        public static Point DisplaySize { get { return new Point(800, 480); } }
+
         KeyboardInput keyboard;
 
         PlayerInput p1Input;
+        PlayerInput p2Input;
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
+            graphics.PreferredBackBufferWidth = DisplaySize.X;
+            graphics.PreferredBackBufferHeight = DisplaySize.Y;
+
+            IsMouseVisible = true;
+
             keyboard = new KeyboardInput();
 
             p1Input = new PlayerInput();
+            p2Input = new PlayerInput();
         }
 
         /// <summary>
@@ -44,6 +53,15 @@ namespace SGJ16
             p1Input.SetKey(GameKey.Shot, Keys.X);
             p1Input.SetKey(GameKey.Pause, Keys.Space);
             p1Input.SetKey(GameKey.Quit, Keys.Escape);
+
+            p2Input.SetKey(GameKey.MoveLeft, Keys.A);
+            p2Input.SetKey(GameKey.MoveRight, Keys.D);
+            p2Input.SetKey(GameKey.LookUp, Keys.W);
+            p2Input.SetKey(GameKey.LookDown, Keys.S);
+            p2Input.SetKey(GameKey.Jump, Keys.Q);
+            p2Input.SetKey(GameKey.Shot, Keys.E);
+            p2Input.SetKey(GameKey.Pause, Keys.Space);
+            p2Input.SetKey(GameKey.Quit, Keys.Escape);
 
             base.Initialize();
         }
@@ -76,11 +94,12 @@ namespace SGJ16
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (IsKeyPressed(p1Input, GameKey.Quit) || IsKeyPressed(p2Input, GameKey.Quit))
+            {
                 Exit();
+            }
 
             keyboard.Update();
-
 
             // TODO: Add your update logic here
 
@@ -93,12 +112,13 @@ namespace SGJ16
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-
-            GraphicsDevice.Clear(Color.DarkSalmon);
-
             if (IsKeyPressed(p1Input, GameKey.Shot))
             {
                 GraphicsDevice.Clear(Color.DarkRed);
+            }
+            else if (IsKeyPressed(p2Input, GameKey.Shot))
+            {
+                GraphicsDevice.Clear(Color.DarkGreen);
             }
             else
             {

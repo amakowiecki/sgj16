@@ -42,6 +42,7 @@
     <Compile Include="Keyboard\GameKey.cs" />
     <Compile Include="Keyboard\KeyboardInput.cs" />
     <Compile Include="Keyboard\PlayerInput.cs" />
+    <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
