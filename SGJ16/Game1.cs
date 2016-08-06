@@ -198,18 +198,17 @@ namespace SGJ16
                     var powerUp = Map.PowerUps[i];
                     if (powerUp.rectangle.Intersects(player1.rect))
                     {
-                        powerUp.Take(player1);
+                        powerUp.Take(player1, Map);
                     }
                     else if (powerUp.rectangle.Intersects(player2.rect))
                     {
-                        powerUp.Take(player2);
+                        powerUp.Take(player2, Map);
                     }
                 }
             }
 
-
-            PowerUpManager.SpawnPowerUps();
-
+            PowerUpManager.Update(gameTime);
+            MusicManager.Update(gameTime);
             base.Update(gameTime);
         }
 

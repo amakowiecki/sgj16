@@ -16,7 +16,14 @@ namespace SGJ16
     {
         public Texture2D Texture;
         public PowerUpEffect Effect;
-        public SoundEffect Sound; 
+        public SoundEffect Sound;
+
+        public PowerUpModel(Texture2D texture, PowerUpEffect effect, SoundEffect sound)
+        {
+            Texture = texture;
+            Effect = effect;
+            Sound = sound;
+        }
     }
     public class PowerUp : IDisplayable
     {
@@ -38,21 +45,28 @@ namespace SGJ16
             return;
         }
 
-        public void Take(Player player)
+        public void Take(Player player, Map map)
         {
             model.Effect.Invoke(player, this);
             model.Sound.Play();
+            map.PowerUps.Remove(this);
         }
     }
 
 
-    public static class PowerUpManager
+    public class PowerUpManager
     {
+        //---Konfiguracja powerUpów
+        public const int SpeedModifier = 10;
+        public const int Heal = 25;
+        public const int SpeedUpTime = 5 * 1000; //milisekundy
+
         public const int PowerUpNumberLimit = 10;
         public const int PowerUpSpawnMin = 60; //w klatkach
         public const int PowerUpSpawnMax = 600; //jw
         public static Random RNG = new Random();
         public static List<PowerUpModel> PowerUpModels = new List<PowerUpModel>();
+        public static List<EffectArgs> AwaitingEffects = new List<EffectArgs>();
         public static Map map;
 
         private static int frameCount = 0;
@@ -61,16 +75,18 @@ namespace SGJ16
         public static void Load(ContentManager content)
         {
             //heal
-            PowerUpModel model = new PowerUpModel();
-            model.Texture = content.Load<Texture2D>("heal");
-            model.Effect = HealEffect;
-            model.Sound = content.Load<SoundEffect>("pizzaeating");
+            PowerUpModel model = new PowerUpModel(content.Load<Texture2D>("heal"), HealEffect, content.Load<SoundEffect>("pizzaeating"));
             PowerUpModels.Add(model);
+
+            //speedUp
+            model = new PowerUpModel(content.Load<Texture2D>("speed"), SpeedUp, content.Load<SoundEffect>("SpeedUp"));
+            PowerUpModels.Add(model);
+
+            //
         }
 
         private static void findEmptySpace(PowerUp powerUp)
         {
-
             bool positionOK = false;
             Rectangle positionRect;
             while (!positionOK)
@@ -96,7 +112,7 @@ namespace SGJ16
                         }
                     }
                 }
-                
+
                 if (!positionOK)
                 {
                     continue;
@@ -105,11 +121,25 @@ namespace SGJ16
                 {
                     powerUp.rectangle = positionRect;
                     return;
-                }               
+                }
             }
         }
 
-        public static void SpawnPowerUps()
+        public static void Update(GameTime gametime)
+        {
+            spawnPowerUps();
+
+            for (int i = AwaitingEffects.Count - 1; i >= 0; i--)
+            {
+                var effect = AwaitingEffects[i];
+                if (effect.CheckEffect(gametime))
+                {
+                    AwaitingEffects.Remove(effect);
+                }                
+            }
+        }
+
+        private static void spawnPowerUps()
         {
             frameCount++;
             if ((map.PowerUps.Count >= PowerUpNumberLimit)
@@ -126,10 +156,50 @@ namespace SGJ16
             frameCount = 0;
         }
 
+        //---Efekty powerUpów---
+
         public static void HealEffect(Player player, PowerUp powerUp)
         {
-            player.Heal(Config.BASIC_HEAL);
-            map.PowerUps.Remove(powerUp);
+            player.Heal(Heal);
+        }
+
+        public static void SpeedUp(Player player, PowerUp powerUp)
+        {
+            player.CurrentSpeed += SpeedModifier;
+            AwaitingEffects.Add(new EffectArgs(SpeedDown, SpeedUpTime, player, powerUp));
+        }
+
+        public static void SpeedDown(Player player, PowerUp powerUp)
+        {
+            player.CurrentSpeed -= SpeedModifier;
+        }
+
+    }
+
+    public class EffectArgs
+    {
+        PowerUpEffect effect;
+        int secondsToInvoke;
+        Player player;
+        PowerUp powerUp;
+
+        public EffectArgs(PowerUpEffect effect, int seconds, Player player, PowerUp powerUp)
+        {
+            this.effect = effect;
+            this.secondsToInvoke = seconds;
+            this.player = player;
+            this.powerUp = powerUp;
+        }
+
+        public bool CheckEffect(GameTime gameTime)
+        {
+            secondsToInvoke -= gameTime.ElapsedGameTime.Milliseconds;
+            if (secondsToInvoke <= 0)
+            {
+                this.effect.Invoke(player, powerUp);
+                return true;
+            }
+            return false;
         }
     }
 }
