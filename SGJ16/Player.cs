@@ -70,26 +70,38 @@ namespace SGJ16
 
         /// <summary>
         /// Zwraca odległość od obiektu z którym skolidowalibyśmy w następnym ruchu
-        /// lub -1 jeśli nie ma żadnych kolizji
+        /// lub int.MaxValue jeśli nie ma żadnych kolizji
         /// </summary>
         /// <param name="rect">Obiekt do sprawdzenia</param>
-        /// <returns>Odległość pozostała lub -1 dla braku kolizji</returns>
+        /// <returns>Odległość pozostała lub int.MaxValue dla braku kolizji</returns>
         public int CheckHorizontalCollision(Rectangle rect)
         {
-            var inflatedRect = new Rectangle(rect.X - CurrentSpeed, rect.Y,
-                rect.Width + 2 * CurrentSpeed, rect.Height);             //?? potencjalnie ujemna pozycja 
+            Rectangle inflatedRect;
+            switch (CurrentDirection)
+            {
+                case Direction.Left:
+                    inflatedRect = new Rectangle(rect.X, rect.Y,
+                rect.Width + CurrentSpeed, rect.Height);                    
+                    break;
+                case Direction.Right:
+                    inflatedRect = new Rectangle(rect.X - CurrentSpeed, rect.Y,
+                rect.Width, rect.Height);
+                    break;
+                default:
+                    inflatedRect = new Rectangle(rect.X, rect.Y,
+                rect.Width, rect.Height);
+                    break;
+            }
 
             if (BoundingBoxes[HitBox.Body].Intersects(inflatedRect))
             {
-                var distance1 = Math.Abs(BoundingBoxes[HitBox.Body].X + PlayerWidth - rect.X);
-                var distance2 = Math.Abs(BoundingBoxes[HitBox.Body].X - rect.X + rect.Width);
-                return distance1 < distance2 ? distance1 : distance2;
+                return 0;
             }
-            return -1;
+            return int.MaxValue;
         }
 
         public void Draw(SpriteBatch batch)
-        {            
+        {
             if (CurrentDirection == Direction.Left)
             {
                 batch.Draw(playerTexture, CurrentPosition, getCurrentTextureBox(), Color.White, 0, Vector2.Zero, 1.0f, SpriteEffects.FlipHorizontally, 1.0f);
@@ -97,7 +109,7 @@ namespace SGJ16
             else
             {
                 batch.Draw(playerTexture, CurrentPosition, getCurrentTextureBox(), Color.White);
-            }            
+            }
         }
 
         public void Update()
@@ -113,16 +125,16 @@ namespace SGJ16
         public bool Move(Direction direction)
         {
             CurrentDirection = direction;
-            int distance = -1;
+            int distance = int.MaxValue;
             foreach (var wall in Map.Walls)
             {
                 int d = CheckHorizontalCollision(wall);
-                if (d != -1 && d < distance)
+                if (d < distance)
                 {
                     distance = d;
                 }
             }
-            if (distance == -1)
+            if (distance == int.MaxValue)
             {
                 distance = CurrentSpeed;
             }
@@ -157,7 +169,7 @@ namespace SGJ16
                     result = new Rectangle((IdleTexturesNumber * PlayerWidth) + currentTextureNumber * PlayerWidth, 0, PlayerWidth, PlayerHeight);
                     break;
                 case State.InAir:
-                    result = new Rectangle((IdleTexturesNumber * PlayerWidth) + (WalkingTexturesNumber * PlayerWidth)+ currentTextureNumber * PlayerWidth, 0, PlayerWidth, PlayerHeight);
+                    result = new Rectangle((IdleTexturesNumber * PlayerWidth) + (WalkingTexturesNumber * PlayerWidth) + currentTextureNumber * PlayerWidth, 0, PlayerWidth, PlayerHeight);
                     break;
                 default:
                     result = new Rectangle(currentTextureNumber * PlayerWidth, 0, PlayerWidth, PlayerHeight);
@@ -194,7 +206,7 @@ namespace SGJ16
         private void changePosition()
         {
             BoundingBoxes[HitBox.Body] =
-                new Rectangle((int)CurrentPosition.X, (int)CurrentPosition.Y + HeadSize, PlayerWidth, BodyHeight);
+                new Rectangle((int) CurrentPosition.X, (int) CurrentPosition.Y + HeadSize, PlayerWidth, BodyHeight);
 
         }
 
