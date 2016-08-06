@@ -10,8 +10,14 @@ namespace SGJ16
 {
     public struct Circle
     {
-        public Point Center;
-        public int Radius;
+        public Vector2 Center;
+        public float Radius;
+
+        public Circle(Vector2 center, float radius)
+        {
+            Center = center;
+            Radius = radius;
+        }
     }
 
     public static partial class StaticMethods
@@ -19,14 +25,14 @@ namespace SGJ16
         public static int Sqr(int value) { return value * value; }
         public static float Sqr(float value) { return value * value; }
 
-        public static int SqDistanceToRectangle(Point point, Rectangle rectangle)
+        public static float SqDistanceToRectangle(Vector2 point, Rectangle rectangle)
         {
-            int x = point.X, y = point.Y;
+            float x = point.X, y = point.Y;
 
-            int xRes = (x < rectangle.X) ? rectangle.X - x
-                : (x > rectangle.X) ? x - rectangle.X : 0;
-            int yRes = (y < rectangle.Y) ? rectangle.Y - y
-                : (y > rectangle.Y) ? y - rectangle.Y : 0;
+            float xRes = (x < rectangle.Left) ? rectangle.Left - x
+                : (x > rectangle.Right) ? x - rectangle.Right : 0;
+            float yRes = (y < rectangle.Top) ? rectangle.Top - y
+                : (y > rectangle.Bottom) ? y - rectangle.Bottom : 0;
 
             return Sqr(xRes) + Sqr(yRes);
         }

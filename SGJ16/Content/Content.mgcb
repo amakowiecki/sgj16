@@ -145,6 +145,7 @@
 /processorParam:TextureFormat=Color
 /build:player2.png
 
+#begin circle.png
 #begin heal.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -156,4 +157,5 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:heal.png
+/build:circle.png
 

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SGJ16
 {
@@ -31,7 +32,7 @@ namespace SGJ16
         HpBar p2HpBar;
         public static Vector2 HpBarPosition = new Vector2(36, 36);
 
-        Missiles missiles = new Missiles(60);
+        Missiles missiles;
 
         public Vector2 DisplayCenter
         {
@@ -51,11 +52,14 @@ namespace SGJ16
 
             keyboard = new KeyboardInput();
 
-            player1 = new Player(false);
+            player1 = new Player(true);
             p1HpBar = new HpBar(player1);
 
-            player2 = new Player(true);
+            player2 = new Player(false);
             p2HpBar = new HpBar(player2);
+            
+            Map = new Map();
+            missiles = new Missiles(Map, 60);
         }
 
         /// <summary>
@@ -79,9 +83,10 @@ namespace SGJ16
                 new MissileModel
                 {
                     MaxDistance = 640,
-                    Speed = 12.0f,
+                    Speed = 11.0f,
                     Radius = 4,
-                    InitialDistance = 20
+                    InitialDistance = 20,
+                    Damage = 10
                 });
 
             player1.Input.SetKey(GameKey.MoveLeft, Keys.Left);
@@ -101,8 +106,11 @@ namespace SGJ16
             player2.Input.SetKey(GameKey.Shot, Keys.Z);
             player2.Input.SetKey(GameKey.Pause, Keys.Space);
             player2.Input.SetKey(GameKey.Quit, Keys.Escape);
-            
-            Map = new Map();
+
+            Player.DamageModifiers.Add(HitBox.Legs, 0.50f);
+            Player.DamageModifiers.Add(HitBox.Body, 1.00f);
+            Player.DamageModifiers.Add(HitBox.Head, 4.17f);
+
             player1.Map = Map;
             player2.Map = Map;
             displayableItems = new List<IDisplayable>();
@@ -196,8 +204,7 @@ namespace SGJ16
             GraphicsDevice.Clear(new Color(96, 96, 96));
 
             spriteBatch.Begin();
-            
-          
+
             foreach (var item in displayableItems)
             {
                 item.Draw(spriteBatch);
@@ -212,6 +219,8 @@ namespace SGJ16
             }
 
             Aim aim = player1.Aim;
+            spriteBatch.Draw(aim.Texture, aim.Position - aim.Texture.GetHalfSize(), Color.White);
+            aim = player2.Aim;
             spriteBatch.Draw(aim.Texture, aim.Position - aim.Texture.GetHalfSize(), Color.White);
 
             DrawHpBar(p1HpBar);

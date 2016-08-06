@@ -35,7 +35,18 @@ namespace SGJ16
 
         public int PlayerHeight;
         public int PlayerWidth;
-        public Map Map;
+        public Map Map
+        {
+            get { return map; }
+            set
+            {
+                if (!value.Players.Contains(this))
+                {
+                    map = value;
+                    value.Players.Add(this);
+                }
+            }
+        }
         public Vector2 CurrentPosition;
         public Dictionary<HitBox, Rectangle> BoundingBoxes;
         public Texture2D playerTexture;
@@ -46,6 +57,8 @@ namespace SGJ16
         public int CurrentSpeed;
         public int CurrentJumpSpeed;
         public Direction CurrentDirection;
+
+        public static Dictionary<HitBox, float> DamageModifiers;
 
         public Gun Gun;
         public HpBar HpBar;
@@ -64,14 +77,27 @@ namespace SGJ16
             }
         }
 
+        private Map map;
         private short currentFrameNumber; //0 <= x < frameChangeRate 
         private short currentTextureNumber; //0 <= x < texturesNumber
         private int framesInAir;
 
+        static Player()
+        {
+            DamageModifiers = new Dictionary<HitBox, float>();
+        }
+
+        private void setInitialPosition(bool isLeft)
+        {
+            CurrentPosition = new Vector2(
+                isLeft ? (float)Config.PLAYER_POSITION_X : Config.WINDOW_WIDTH - PlayerWidth - Config.PLAYER_POSITION_X,
+                (float)Config.WINDOW_HEIGHT - PlayerHeight - Config.GROUND_LEVEL);
+        }
+
         public Player(bool isLeft)
         {
             currentFrameNumber = 0;
-            CurrentDirection = isLeft ? Direction.Left : Direction.Right;
+            CurrentDirection = isLeft ? Direction.Right : Direction.Left;
             currentTextureNumber = 0;
             CurrentState = State.Standing;
             CurrentHp = MaxHp = DefaultHP;
@@ -79,7 +105,7 @@ namespace SGJ16
             CurrentJumpSpeed = DefaultJumpSpeed;
             PlayerHeight = DefaultPlayerHeight;
             PlayerWidth = DefaultPlayerWidth;
-            CurrentPosition = new Vector2((float) Config.WINDOW_WIDTH / 2, (float) Config.WINDOW_HEIGHT - PlayerHeight);
+            setInitialPosition(isLeft);
             MissileOrigin = DefaultMissileOrigin;
 
             IsFalling = false;
@@ -105,96 +131,6 @@ namespace SGJ16
         {
             //return BoundingBoxes.Any(b => StaticMethods.CheckCollision(circle, b));
             return false;
-        }
-
-        /// <summary>
-        /// Zwraca odległość od obiektu z którym skolidowalibyśmy w następnym ruchu
-        /// lub int.MaxValue jeśli nie ma żadnych kolizji
-        /// </summary>
-        /// <param name="rect">Obiekt do sprawdzenia</param>
-        /// <returns>Odległość pozostała lub int.MaxValue dla braku kolizji</returns>
-        private int checkHorizontalCollision(Rectangle rect)
-        {
-            Rectangle inflatedRect;
-            switch (CurrentDirection)
-            {
-                case Direction.Left:
-                    inflatedRect = new Rectangle(rect.X, rect.Y,
-                rect.Width + CurrentSpeed, rect.Height);
-                    break;
-                case Direction.Right:
-                    inflatedRect = new Rectangle(rect.X - CurrentSpeed, rect.Y,
-                rect.Width, rect.Height);
-                    break;
-                default:
-                    inflatedRect = new Rectangle(rect.X, rect.Y,
-                rect.Width, rect.Height);
-                    break;
-            }
-            int distance = 0;
-            int smallestDistance = int.MaxValue;
-            foreach (var hitBox in BoundingBoxes.Values)
-            {
-                if (hitBox.Intersects(inflatedRect))
-                {
-                    switch (CurrentDirection)
-                    {
-                        case Direction.Left:
-                            distance = hitBox.Left - rect.Right;
-                            break;
-                        case Direction.Right:
-                            distance = rect.Left - hitBox.Right;
-                            break;
-                        default:
-                            distance = 0;
-                            break;
-                    }
-                    if (distance < smallestDistance)
-                    {
-                        smallestDistance = distance;
-                    }
-                }
-            }
-            return smallestDistance;
-        }
-
-        /// <summary>
-        /// Zwraca odległość do przeszkody lub int.MaxValue dla braku kolizji
-        /// </summary>
-        /// <returns></returns>
-        private int checkVerticalCollision(Rectangle rect)
-        {
-            Rectangle inflatedRect;
-            if (IsFalling)
-            {
-                inflatedRect = new Rectangle(rect.X, rect.Y - CurrentJumpSpeed, rect.Width, rect.Height);
-            }
-            else
-            {
-                inflatedRect = new Rectangle(rect.X, rect.Y, rect.Width, rect.Height + CurrentJumpSpeed);
-            }
-
-            int smallestDistance = int.MaxValue;
-            int distance = 0;
-            foreach (var hitBox in BoundingBoxes.Values)
-            {
-                if (hitBox.Intersects(inflatedRect))
-                {
-                    if (IsFalling)
-                    {
-                        distance = rect.Top - hitBox.Bottom;
-                    }
-                    else
-                    {
-                        distance = hitBox.Top - rect.Bottom;
-                    }
-                    if (distance < smallestDistance)
-                    {
-                        smallestDistance = distance;
-                    }
-                }
-            }
-            return smallestDistance;
         }
 
         public void Draw(SpriteBatch batch)
@@ -287,6 +223,152 @@ namespace SGJ16
 
         }
 
+        public bool CheckDamage(float basicDamage, Circle circle)
+        {
+            float placeholder = 0;
+            return CheckDamage(basicDamage, circle, out placeholder);
+        }
+
+        /// <summary>
+        /// Sprawdź kolizję, zadaj obrażenia. Zwraca czy został 
+        /// trafiony, result przechowuje ile obrażeń otrzymano.
+        /// </summary>
+        public bool CheckDamage(float basicDamage, Circle circle, out float result)
+        {
+            foreach (var boxInfo in BoundingBoxes)
+            {
+                if (StaticMethods.CheckCollision(circle, boxInfo.Value))
+                {
+                    if (DamageModifiers.ContainsKey(boxInfo.Key))
+                    {
+                        float dmg = DamageModifiers[boxInfo.Key] * basicDamage;
+                        if (CurrentHp > dmg)
+                        {
+                            CurrentHp -= dmg;
+                            result = dmg;
+                            return true;
+                        }
+                        else
+                        {
+                            result = CurrentHp;
+                            CurrentHp = 0;
+                            return true;
+                        }
+                    }
+                }
+            }
+            result = 0;
+            return false;
+        }
+
+        /// <summary>
+        /// Przywróć HP. Zwraca faktyczną ilość zregenerowanego HP.
+        /// </summary>
+        public float Heal(float hpToHeal)
+        {
+            if (CurrentHp + hpToHeal > MaxHp)
+            {
+                float result = MaxHp - CurrentHp;
+                CurrentHp = MaxHp;
+                return result;
+            }
+            else
+            {
+                CurrentHp += hpToHeal;
+                return hpToHeal;
+            }
+        }
+
+        /// <summary>
+        /// Zwraca odległość od obiektu z którym skolidowalibyśmy w następnym ruchu
+        /// lub int.MaxValue jeśli nie ma żadnych kolizji
+        /// </summary>
+        /// <param name="rect">Obiekt do sprawdzenia</param>
+        /// <returns>Odległość pozostała lub int.MaxValue dla braku kolizji</returns>
+        private int checkHorizontalCollision(Rectangle rect)
+        {
+            Rectangle inflatedRect;
+            switch (CurrentDirection)
+            {
+                case Direction.Left:
+                    inflatedRect = new Rectangle(rect.X, rect.Y,
+                rect.Width + CurrentSpeed, rect.Height);
+                    break;
+                case Direction.Right:
+                    inflatedRect = new Rectangle(rect.X - CurrentSpeed, rect.Y,
+                rect.Width, rect.Height);
+                    break;
+                default:
+                    inflatedRect = new Rectangle(rect.X, rect.Y,
+                rect.Width, rect.Height);
+                    break;
+            }
+            int distance = 0;
+            int smallestDistance = int.MaxValue;
+            foreach (var hitBox in BoundingBoxes.Values)
+            {
+                if (hitBox.Intersects(inflatedRect))
+                {
+                    switch (CurrentDirection)
+                    {
+                        case Direction.Left:
+                            distance = hitBox.Left - rect.Right;
+                            break;
+                        case Direction.Right:
+                            distance = rect.Left - hitBox.Right;
+                            break;
+                        default:
+                            distance = 0;
+                            break;
+                    }
+                    if (distance < smallestDistance)
+                    {
+                        smallestDistance = distance;
+                    }
+                }
+            }
+            return smallestDistance;
+        }
+
+        /// <summary>
+        /// Zwraca odległość do przeszkody lub int.MaxValue dla braku kolizji
+        /// </summary>
+        /// <returns></returns>
+        private int checkVerticalCollision(Rectangle rect)
+        {
+            Rectangle inflatedRect;
+            if (IsFalling)
+            {
+                inflatedRect = new Rectangle(rect.X, rect.Y - CurrentJumpSpeed, rect.Width, rect.Height);
+            }
+            else
+            {
+                inflatedRect = new Rectangle(rect.X, rect.Y, rect.Width, rect.Height + CurrentJumpSpeed);
+            }
+
+            int smallestDistance = int.MaxValue;
+            int distance = 0;
+            foreach (var hitBox in BoundingBoxes.Values)
+            {
+                if (hitBox.Intersects(inflatedRect))
+                {
+                    if (IsFalling)
+                    {
+                        distance = rect.Top - hitBox.Bottom;
+                    }
+                    else
+                    {
+                        distance = hitBox.Top - rect.Bottom;
+                    }
+                    if (distance < smallestDistance)
+                    {
+                        smallestDistance = distance;
+                    }
+                }
+            }
+            return smallestDistance;
+        }
+
         private bool flyLikeAFuckingBird()
         {
             //CurrentJumpSpeed = (CurrentJumpSpeed/(((framesInAir)/2)+1))+5;
@@ -347,7 +429,7 @@ namespace SGJ16
             }
             return true;
         }
-
+        
         private Rectangle getCurrentTextureBox()
         {
             Rectangle result;
