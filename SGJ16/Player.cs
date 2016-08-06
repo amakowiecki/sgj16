@@ -29,8 +29,8 @@ namespace SGJ16
         public static Vector2 DefaultMissileOrigin = new Vector2(55, 40);
         public const int MaxFramesInAir = 15;
 
-        private static int textureChangeRate = 5;
-        private static short IdleTexturesNumber = 1;
+        private static int textureChangeRate = 25;
+        private static short IdleTexturesNumber = 2;
         private static short WalkingTexturesNumber = 3;
 
         public int PlayerHeight;
@@ -207,17 +207,19 @@ namespace SGJ16
         }
 
         public void Update()
-        {
-            currentFrameNumber++;
-            if (currentFrameNumber >= textureChangeRate)
+        {            
+            if ((currentFrameNumber >= textureChangeRate && CurrentState == State.Standing)
+                ||( currentFrameNumber*3 >= textureChangeRate && CurrentState == State.Walking))
             {
                 currentFrameNumber = 0;
                 updateTextureNumber();
             }
             if (CurrentState == State.InAir)
             {
+                updateTextureNumber();
                 flyLikeAFuckingBird();
             }
+            currentFrameNumber++;
 
             Gun.Update();
             HpBar.Update();
@@ -316,6 +318,7 @@ namespace SGJ16
                     CurrentPosition.Y = Config.PLAYER_HEIGHT - PlayerHeight;
                     IsFalling = false;
                     CurrentState = State.Standing;
+                    currentTextureNumber = 0;
                 }
             }
             else
@@ -330,6 +333,7 @@ namespace SGJ16
                 CurrentState = State.Standing;
                 IsFalling = false;
                 framesInAir = 0;
+                currentTextureNumber = 0;
                 return false;
             }
             return true;

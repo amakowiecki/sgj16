@@ -8,11 +8,12 @@ using System.Threading.Tasks;
 
 namespace SGJ16
 {
-    public class Map
+    public class Map :IDisplayable
     {
         public List<Player> Players { get; set; }
         public List<Rectangle> Walls { get; set; }
         public List<Rectangle> Platforms { get; set; }  //tymczasowe
+        public Texture2D MapTexture { get; set; }
 
         public Map()
         {
@@ -33,9 +34,19 @@ namespace SGJ16
 
         public void SetPlatforms()
         {
-            var newPlatform = new Rectangle( Config.WINDOW_WIDTH / 3, Config.WINDOW_HEIGHT -  128, 128, 32);
+            var newPlatform = new Rectangle(254, 355, 174, 38);
             Walls.Add(newPlatform);
             Platforms.Add(newPlatform);
+        }
+
+        public void Update()
+        {
+            return;
+        }
+
+        public void Draw(SpriteBatch batch)
+        {
+            batch.Draw(MapTexture, new Vector2(0, 0), Color.White);
         }
     }
 }

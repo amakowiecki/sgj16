@@ -19,6 +19,8 @@ namespace SGJ16
 
         KeyboardInput keyboard;
 
+        List<IDisplayable> displayableItems;
+
         PlayerInput p1Input;
         PlayerInput p2Input;
         Player player1;
@@ -104,8 +106,15 @@ namespace SGJ16
             p2Input.SetKey(GameKey.Pause, Keys.Space);
             p2Input.SetKey(GameKey.Quit, Keys.Escape);
 
+            
             Map = new Map();
             player1.Map = Map;
+            displayableItems = new List<IDisplayable>();
+            
+            //kolejność ma znaczenie
+            displayableItems.Add(Map);
+            displayableItems.Add(player1);
+
             base.Initialize();
         }
 
@@ -133,6 +142,7 @@ namespace SGJ16
             player1.playerTexture = Content.Load<Texture2D>("idle");
             player1.Gun.Texture = Content.Load<Texture2D>("weapon");
 
+            Map.MapTexture = Content.Load<Texture2D>("background1st");
             testPlatformTexture = Content.Load<Texture2D>("testPlatform");
             Map.SetPlatforms();
 
@@ -191,6 +201,13 @@ namespace SGJ16
             if (player1.CurrentHp < 0)
                 player1.CurrentHp = 0;
 
+
+            foreach (var item in displayableItems)
+            {
+                item.Update();
+            }
+
+
             base.Update(gameTime);
         }
 
@@ -203,15 +220,14 @@ namespace SGJ16
             GraphicsDevice.Clear(new Color(96, 96, 96));
 
             spriteBatch.Begin();
-
-            player1.Draw(spriteBatch);
+            
             foreach (Missile missile in missiles)
             {
                 missile.Draw(spriteBatch);
             }
-            foreach (var platform in Map.Platforms)
-            {//tymczasowe,platformy będą na mapie
-                spriteBatch.Draw(testPlatformTexture, platform.Location.ToVector2(), Color.White);
+            foreach (var item in displayableItems)
+            {
+                item.Draw(spriteBatch);
             }
             spriteBatch.Draw(p1Aim.Texture, p1Aim.Position - p1Aim.Texture.GetHalfSize(), Color.White);
 
