@@ -41,12 +41,14 @@ namespace SGJ16
         public Texture2D playerTexture;
         public State CurrentState;
         public bool IsFalling;
-        public float CurrentHP;
+        public float MaxHp;
+        public float CurrentHp;
         public int CurrentSpeed;
         public int CurrentJumpSpeed;
         public Direction CurrentDirection;
 
         public Gun Gun;
+        public HpBar HpBar;
 
         public Vector2 MissileOrigin;
         public Vector2 AbsoluteMissileOrigin
@@ -70,7 +72,7 @@ namespace SGJ16
             CurrentDirection = isLeft ? Direction.Left : Direction.Right;
             currentTextureNumber = 0;
             CurrentState = State.Standing;
-            CurrentHP = DefaultHP;
+            CurrentHp = MaxHp = DefaultHP;
             CurrentSpeed = DefaultSpeed;
             CurrentJumpSpeed = DefaultJumpSpeed;
             PlayerHeight = DefaultPlayerHeight;
@@ -218,6 +220,7 @@ namespace SGJ16
             }
 
             Gun.Update();
+            HpBar.Update();
         }
 
         public bool Move(Direction direction)

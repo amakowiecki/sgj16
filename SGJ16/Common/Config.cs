@@ -23,5 +23,7 @@ namespace SGJ16
         public const int PLAYER_HEIGHT = 113;
         public const int PLAYER_WIDTH = 65;
 
+        public const float HP_BAR_PERC_STEP = 1.15f;
+
     }
 }

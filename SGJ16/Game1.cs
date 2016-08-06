@@ -27,6 +27,10 @@ namespace SGJ16
 
         Aim p1Aim;
 
+        HpBar p1HpBar;
+        HpBar p2HpBar;
+        public static Vector2 HpBarPosition = new Vector2(36, 36);
+
         Missiles missiles = new Missiles(60);
 
         public Vector2 DisplayCenter
@@ -50,8 +54,10 @@ namespace SGJ16
             player1 = new Player(false);
             p1Input = new PlayerInput();
             p1Aim = new Aim(player1);
+            p1HpBar = new HpBar(player1);
 
             p2Input = new PlayerInput();
+            p2HpBar = new HpBar(player1);
         }
 
         /// <summary>
@@ -63,6 +69,13 @@ namespace SGJ16
         protected override void Initialize()
         {
             Aim.Initialize(Config.MIN_AIM_ANGLE, Config.MAX_AIM_ANGLE, Config.AIM_STEP, Config.DISTANCE);
+
+            HpBar.Ranges = new List<HpRange>
+            {
+                new HpRange { UpperBound = 1.0f, Type = HpRangeType.Normal },
+                new HpRange { UpperBound = 0.5f, Type = HpRangeType.Low },
+                new HpRange { UpperBound = 0.2f, Type = HpRangeType.VeryLow }
+            };
 
             missiles.Models.Add(MissileModelType.Basic,
                 new MissileModel
@@ -108,6 +121,14 @@ namespace SGJ16
             p1Aim.Texture = Content.Load<Texture2D>("aim");
 
             missiles.Models[MissileModelType.Basic].Texture = Content.Load<Texture2D>("pocisk");
+
+            HpBar.Textures[HpRangeType.Normal] = Content.Load<Texture2D>("hpbargreen");
+            HpBar.Textures[HpRangeType.Low] = Content.Load<Texture2D>("hpbaryellow");
+            HpBar.Textures[HpRangeType.VeryLow] = Content.Load<Texture2D>("hpbarred");
+            HpBar.BackTexture = Content.Load<Texture2D>("hpbarback");
+            p1HpBar.Position = HpBarPosition;
+            p2HpBar.Position = new Vector2(Config.WINDOW_WIDTH - HpBarPosition.X 
+                - HpBar.BackTexture.Width, HpBarPosition.Y);
 
             player1.playerTexture = Content.Load<Texture2D>("idle");
             player1.Gun.Texture = Content.Load<Texture2D>("weapon");
@@ -165,6 +186,10 @@ namespace SGJ16
                 player1.CurrentState = State.Standing;
             }
             player1.Update();
+            
+            player1.CurrentHp -= 1;
+            if (player1.CurrentHp < 0)
+                player1.CurrentHp = 0;
 
             base.Update(gameTime);
         }
@@ -189,6 +214,9 @@ namespace SGJ16
                 spriteBatch.Draw(testPlatformTexture, platform.Location.ToVector2(), Color.White);
             }
             spriteBatch.Draw(p1Aim.Texture, p1Aim.Position - p1Aim.Texture.GetHalfSize(), Color.White);
+
+            DrawHpBar(p1HpBar);
+            DrawHpBar(p2HpBar);
 
             spriteBatch.End();
 
@@ -231,6 +259,17 @@ namespace SGJ16
             if (IsKeyDown(playerInput, GameKey.Shot))
             {
                 CreateMissile(aim);
+            }
+        }
+
+        private void DrawHpBar(HpBar bar)
+        {
+            spriteBatch.Draw(HpBar.BackTexture, bar.Position, Color.White);
+            Texture2D texture = bar.Texture;
+            if (texture != null)
+            {
+                float width = bar.VisibleHpPercentage * texture.Width;                
+                spriteBatch.Draw(texture, bar.Position, new Rectangle(0, 0, (int)width, texture.Height), Color.White);
             }
         }
     }
