@@ -73,6 +73,7 @@ D:\projekty\sgj16\SGJ16\bin\Windows\x86\Debug\SharpDX.XInput.xml
 D:\projekty\sgj16\SGJ16\bin\Windows\x86\Debug\SharpDX.RawInput.xml
 D:\projekty\sgj16\SGJ16\bin\Windows\x86\Debug\SharpDX.Direct3D9.xml
 D:\projekty\sgj16\SGJ16\bin\Windows\x86\Debug\Content\pocisk.xnb
+<<<<<<< HEAD
 C:\Users\Jimmy\Desktop\Nowy folder (2)\SGJ16\obj\x86\Debug\SGJ16.exe
 C:\Users\Jimmy\Desktop\Nowy folder (2)\SGJ16\obj\x86\Debug\SGJ16.pdb
 C:\Users\Jimmy\Desktop\Nowy folder (2)\SGJ16\bin\Windows\x86\Debug\Content\aim.xnb
@@ -100,3 +101,6 @@ C:\Users\Jimmy\Desktop\Nowy folder (2)\SGJ16\bin\Windows\x86\Debug\SharpDX.XInpu
 C:\Users\Jimmy\Desktop\Nowy folder (2)\SGJ16\bin\Windows\x86\Debug\SharpDX.RawInput.xml
 C:\Users\Jimmy\Desktop\Nowy folder (2)\SGJ16\bin\Windows\x86\Debug\SharpDX.Direct3D9.xml
 C:\Users\Jimmy\Desktop\Nowy folder (2)\SGJ16\obj\x86\Debug\SGJ16.csprojResolveAssemblyReference.cache
+=======
+D:\projekty\sgj16\SGJ16\bin\Windows\x86\Debug\Content\idle.xnb
+>>>>>>> 1474e6d71236ab1c6cf0bf46849412aaf9a2babd

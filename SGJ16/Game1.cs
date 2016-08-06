@@ -1,8 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+<<<<<<< HEAD
 using System;
 using System.Collections.Generic;
+=======
+using SGJ16.Common;
+>>>>>>> 1474e6d71236ab1c6cf0bf46849412aaf9a2babd
 
 namespace SGJ16
 {
@@ -21,6 +25,8 @@ namespace SGJ16
 
         PlayerInput p1Input;
         PlayerInput p2Input;
+        Player player1;
+        Map Map;
 
         Aim p1Aim;
         MissileModel missileModel = new MissileModel { MaxDistance = 500 , Speed = 5.0f };
@@ -81,6 +87,10 @@ namespace SGJ16
             p2Input.SetKey(GameKey.Pause, Keys.Space);
             p2Input.SetKey(GameKey.Quit, Keys.Escape);
 
+
+            player1 = new Player(false);
+            Map = new Map();
+            player1.Map = Map;
             base.Initialize();
         }
 
@@ -96,6 +106,8 @@ namespace SGJ16
             p1Aim.Texture = Content.Load<Texture2D>("aim");
 
             missileModel.Texture = Content.Load<Texture2D>("pocisk");
+
+            player1.playerTexture = Content.Load<Texture2D>("idle");
 
             // TODO: use this.Content to load your game content here
         }
@@ -124,10 +136,30 @@ namespace SGJ16
             keyboard.Update();
             UpdateAim(p1Aim, p1Input);
 
+<<<<<<< HEAD
             foreach (Missile missile in missiles)
             {
                 missile.Update();
             }
+=======
+            if (IsKeyPressed(p1Input, GameKey.MoveLeft))
+            {
+                player1.CurrentState = State.Walking;
+                player1.Move(Direction.Left);
+            }
+            else if (IsKeyPressed(p1Input, GameKey.MoveRight))
+            {
+                player1.CurrentState = State.Walking;
+                player1.Move(Direction.Right);
+            }
+            //else if czy skacze
+            else
+            {
+                player1.CurrentState = State.Standing;
+            }
+            player1.Update();
+
+>>>>>>> 1474e6d71236ab1c6cf0bf46849412aaf9a2babd
 
             base.Update(gameTime);
         }
@@ -142,12 +174,18 @@ namespace SGJ16
 
             spriteBatch.Begin();
 
+<<<<<<< HEAD
             spriteBatch.Draw(p1Aim.Texture, DisplayCenter + p1Aim.GetRelativePosition() 
                 - p1Aim.Texture.GetHalfSize(), Color.White);
             foreach (Missile missile in missiles)
             {
                 missile.Draw(spriteBatch);
             }
+=======
+            //spriteBatch.Draw(sample, DisplaySize.ToVector2() / 2 - new Vector2(sample.Width, sample.Height), Color.White * 0.5f);
+
+            player1.Draw(spriteBatch);
+>>>>>>> 1474e6d71236ab1c6cf0bf46849412aaf9a2babd
 
             spriteBatch.End();
 
