@@ -141,6 +141,12 @@ namespace SGJ16
             {
                 missile.Update();
             }
+
+            if (IsKeyDown(p1Input, GameKey.Jump))
+            {
+                player1.Jump();
+            }
+
             if (IsKeyPressed(p1Input, GameKey.MoveLeft))
             {                
                 player1.Move(Direction.Left);
@@ -148,11 +154,7 @@ namespace SGJ16
             else if (IsKeyPressed(p1Input, GameKey.MoveRight))
             {
                 player1.Move(Direction.Right);
-            }
-            else if (IsKeyDown(p1Input, GameKey.Jump))
-            {
-                player1.Jump();
-            }
+            }          
             else if(player1.CurrentState != State.InAir)
             {
                 player1.CurrentState = State.Standing;

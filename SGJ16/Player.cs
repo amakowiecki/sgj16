@@ -152,7 +152,16 @@ namespace SGJ16
         /// <returns></returns>
         private int checkVerticalCollision(Rectangle rect)
         {
-            Rectangle inflatedRect = new Rectangle(rect.X, rect.Y + CurrentJumpSpeed, rect.Width, rect.Height + CurrentJumpSpeed);
+            Rectangle inflatedRect;
+            if (IsFalling)
+            {
+                inflatedRect = new Rectangle(rect.X, rect.Y - CurrentJumpSpeed, rect.Width, rect.Height);
+            }
+            else
+            {
+                inflatedRect = new Rectangle(rect.X, rect.Y, rect.Width, rect.Height + CurrentJumpSpeed);
+            }
+            
             int smallestDistance = int.MaxValue;
             int distance = 0;
             foreach (var hitBox in BoundingBoxes.Values)
@@ -204,7 +213,11 @@ namespace SGJ16
 
         public bool Move(Direction direction)
         {
-            CurrentState = State.Walking;
+            if (CurrentState != State.InAir)
+            {
+                CurrentState = State.Walking;
+            }
+            
             CurrentDirection = direction;
             int distance = int.MaxValue;
             foreach (var wall in Map.Walls)
@@ -240,35 +253,53 @@ namespace SGJ16
 
         public void Jump()
         {
-            CurrentState = State.InAir;
+            if (CurrentState != State.InAir)
+            {
+                CurrentState = State.InAir;
+                CurrentJumpSpeed = DefaultJumpSpeed;
+            }
+            
         }
 
         private bool flyLikeAFuckingBird()
         {
-            framesInAir++;
+            // CurrentJumpSpeed =  Log//(CurrentJumpSpeed/(((framesInAir)/2)+1))+5;
             if (framesInAir >= MaxFramesInAir)
             {
                 IsFalling = true;
-                framesInAir = 0;
             }
             int distance = int.MaxValue;
             foreach (var wall in Map.Walls)
             {
                 distance = checkVerticalCollision(wall);
-            }
-            if (distance == 0)
-            {
-                CurrentState = State.Standing;
-                return false;
-            }
+            }            
 
             if (IsFalling)
             {
+                
+                if (framesInAir <= 0)
+                {
+                    framesInAir = 0;
+                }
+                else
+                {
+                    framesInAir--;
+                }
                 CurrentPosition.Y += distance == int.MaxValue ? CurrentJumpSpeed : distance;
             }
             else
             {
+                framesInAir++;
                 CurrentPosition.Y -= distance == int.MaxValue ? CurrentJumpSpeed : distance;
+            }
+
+            changePosition();
+            if (distance != int.MaxValue)
+            {
+                CurrentState = State.Standing;
+                IsFalling = false;
+                framesInAir = 0;
+                return false;
             }
             return true;
         }
@@ -324,7 +355,10 @@ namespace SGJ16
         {
             BoundingBoxes[HitBox.Body] =
                 new Rectangle((int) CurrentPosition.X, (int) CurrentPosition.Y + HeadSize, PlayerWidth, BodyHeight);
-
+            BoundingBoxes[HitBox.Head] =
+                new Rectangle((int) CurrentPosition.X + (PlayerWidth - HeadSize) / 2, (int)CurrentPosition.Y, HeadSize, HeadSize);
+            BoundingBoxes[HitBox.Legs] =
+                new Rectangle((int) CurrentPosition.X, (int)CurrentPosition.Y + HeadSize + BodyHeight, PlayerWidth, LegHeight);
         }
 
     }
