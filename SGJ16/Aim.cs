@@ -12,6 +12,7 @@ namespace SGJ16
     {
         public Texture2D Texture;
         public float Angle;
+        public Direction Direction;
 
         public static float Distance;
         public static float MinAngle;

@@ -1,12 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-<<<<<<< HEAD
 using System;
 using System.Collections.Generic;
-=======
-using SGJ16.Common;
->>>>>>> 1474e6d71236ab1c6cf0bf46849412aaf9a2babd
 
 namespace SGJ16
 {
