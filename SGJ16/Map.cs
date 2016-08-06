@@ -32,13 +32,13 @@ namespace SGJ16
 
         public void SetPlatforms()
         {
-            var newPlatform = new Rectangle(254, 355, 174, 38);
+            var newPlatform = new Rectangle(254, 358, 174, 38); //platforma z DeLoreanem
             Walls.Add(newPlatform);
-            newPlatform = new Rectangle(579, 532, 69, 106);
+            newPlatform = new Rectangle(579, 535, 69, 106);  //platforma na środku
             Walls.Add(newPlatform);
-            newPlatform = new Rectangle(717, 495, 175, 6);
+            newPlatform = new Rectangle(717, 498, 175, 6); //trzepak
             Walls.Add(newPlatform);
-            newPlatform = new Rectangle(813, 348, 170, 26);
+            newPlatform = new Rectangle(813, 353, 170, 26); //przy drzewie
             Walls.Add(newPlatform);
             newPlatform = new Rectangle(0, 512, 151, 129);
             Walls.Add(newPlatform);

@@ -21,8 +21,9 @@ namespace SGJ16
 
         List<IDisplayable> displayableItems;
 
-        PlayerInput p2Input;
+        //PlayerInput p2Input;
         Player player1;
+        Player player2;
         Map Map;
         Texture2D testPlatformTexture;
 
@@ -53,8 +54,8 @@ namespace SGJ16
             player1 = new Player(false);
             p1HpBar = new HpBar(player1);
 
-            p2Input = new PlayerInput();
-            p2HpBar = new HpBar(player1);
+            player2 = new Player(true);
+            p2HpBar = new HpBar(player2);
         }
 
         /// <summary>
@@ -87,28 +88,29 @@ namespace SGJ16
             player1.Input.SetKey(GameKey.MoveRight, Keys.Right);
             player1.Input.SetKey(GameKey.LookUp, Keys.Up);
             player1.Input.SetKey(GameKey.LookDown, Keys.Down);
-            player1.Input.SetKey(GameKey.Jump, Keys.Z);
-            player1.Input.SetKey(GameKey.Shot, Keys.X);
+            player1.Input.SetKey(GameKey.Jump, Keys.RightShift);
+            player1.Input.SetKey(GameKey.Shot, Keys.Enter);
             player1.Input.SetKey(GameKey.Pause, Keys.Space);
             player1.Input.SetKey(GameKey.Quit, Keys.Escape);
 
-            p2Input.SetKey(GameKey.MoveLeft, Keys.A);
-            p2Input.SetKey(GameKey.MoveRight, Keys.D);
-            p2Input.SetKey(GameKey.LookUp, Keys.W);
-            p2Input.SetKey(GameKey.LookDown, Keys.S);
-            p2Input.SetKey(GameKey.Jump, Keys.Q);
-            p2Input.SetKey(GameKey.Shot, Keys.E);
-            p2Input.SetKey(GameKey.Pause, Keys.Space);
-            p2Input.SetKey(GameKey.Quit, Keys.Escape);
-
+            player2.Input.SetKey(GameKey.MoveLeft, Keys.A);
+            player2.Input.SetKey(GameKey.MoveRight, Keys.D);
+            player2.Input.SetKey(GameKey.LookUp, Keys.W);
+            player2.Input.SetKey(GameKey.LookDown, Keys.S);
+            player2.Input.SetKey(GameKey.Jump, Keys.LeftShift);
+            player2.Input.SetKey(GameKey.Shot, Keys.Z);
+            player2.Input.SetKey(GameKey.Pause, Keys.Space);
+            player2.Input.SetKey(GameKey.Quit, Keys.Escape);
             
             Map = new Map();
             player1.Map = Map;
+            player2.Map = Map;
             displayableItems = new List<IDisplayable>();
             
             //kolejność ma znaczenie
             displayableItems.Add(Map);
             displayableItems.Add(player1);
+            displayableItems.Add(player2);
 
             base.Initialize();
         }
@@ -133,8 +135,13 @@ namespace SGJ16
                 - HpBar.BackTexture.Width, HpBarPosition.Y);
 
             player1.playerTexture = Content.Load<Texture2D>("idle");
-            player1.Gun.Texture = Content.Load<Texture2D>("weapon");
-            player1.Aim.Texture = Content.Load<Texture2D>("aim");
+            player2.playerTexture = Content.Load<Texture2D>("player2");
+            var gunTexture = Content.Load<Texture2D>("weapon");
+            player1.Gun.Texture = gunTexture;
+            player2.Gun.Texture = gunTexture;
+            var aimTexture = Content.Load<Texture2D>("aim");
+            player1.Aim.Texture = aimTexture;
+            player2.Aim.Texture = aimTexture;
 
             Map.MapTexture = Content.Load<Texture2D>("background1st");
             testPlatformTexture = Content.Load<Texture2D>("testPlatform");
@@ -171,6 +178,7 @@ namespace SGJ16
             }
 
             UpdatePlayer(player1);
+            UpdatePlayer(player2);
 
             base.Update(gameTime);
         }
@@ -265,10 +273,7 @@ namespace SGJ16
             {
                 Exit();
             }
-            if (IsKeyDown(pInput, GameKey.Jump))
-            {
-                player.Jump();
-            }
+
 
             if (IsKeyPressed(pInput, GameKey.MoveLeft))
             {
@@ -282,6 +287,11 @@ namespace SGJ16
             {
                 player.CurrentState = State.Standing;
             }
+            if (IsKeyDown(pInput, GameKey.Jump))
+            {
+                player.Jump();
+            }
+
             //player.Update();
         }
     }
