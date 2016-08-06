@@ -197,7 +197,8 @@ namespace SGJ16
                 return false;
             }
 
-            if (CurrentPosition.Y != Config.WINDOW_HEIGHT - PlayerHeight)
+            if ((int) CurrentPosition.Y != Config.WINDOW_HEIGHT - PlayerHeight - Config.GROUND_LEVEL
+                && CurrentState != State.InAir)
             {
                 CurrentState = State.InAir;
                 IsFalling = true;

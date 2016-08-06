@@ -26,7 +26,6 @@ namespace SGJ16
         Player player1;
         Player player2;
         Map Map;
-        Texture2D testPlatformTexture;
 
         HpBar p1HpBar;
         HpBar p2HpBar;
@@ -152,11 +151,14 @@ namespace SGJ16
             player2.Aim.Texture = aimTexture;
 
             Map.MapTexture = Content.Load<Texture2D>("background1st");
-            testPlatformTexture = Content.Load<Texture2D>("testPlatform");
             Map.SetPlatforms();
 
+            MusicManager.Load(Content);
             PowerUpManager.map = Map;
             PowerUpManager.Load(Content);
+
+
+            MusicManager.Play();
         }
 
         /// <summary>

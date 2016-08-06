@@ -163,3 +163,9 @@
 /processorParam:Quality=Best
 /build:pizzaeating.wav
 
+#begin muzykawalki.wav
+/importer:WavImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:muzykawalki.wav
+
