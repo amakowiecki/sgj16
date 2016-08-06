@@ -16,6 +16,6 @@ namespace SGJ16
     {
         Head,
         Body,
-        Leg
+        Legs
     }
 }
