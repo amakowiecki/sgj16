@@ -97,8 +97,7 @@ namespace SGJ16
             else
             {
                 batch.Draw(playerTexture, CurrentPosition, getCurrentTextureBox(), Color.White);
-            }
-            
+            }            
         }
 
         public void Update()
@@ -142,6 +141,7 @@ namespace SGJ16
                 default:
                     break;
             }
+            changePosition();
             return true;
         }
 
@@ -176,14 +176,12 @@ namespace SGJ16
                     if (currentTextureNumber >= IdleTexturesNumber)
                     {
                         currentTextureNumber = 0;
-                        //currentFrameNumber = 0;
                     }
                     break;
                 case State.Walking:
                     if (currentTextureNumber >= WalkingTexturesNumber)
                     {
                         currentTextureNumber = 0;
-                        //currentFrameNumber = 0;
                     }
                     break;
                 case State.InAir:
@@ -191,6 +189,13 @@ namespace SGJ16
                 default:
                     break;
             }
+        }
+
+        private void changePosition()
+        {
+            BoundingBoxes[HitBox.Body] =
+                new Rectangle((int)CurrentPosition.X, (int)CurrentPosition.Y + HeadSize, PlayerWidth, BodyHeight);
+
         }
 
     }
