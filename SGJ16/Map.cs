@@ -24,6 +24,8 @@ namespace SGJ16
         {
             Walls.Add(new Rectangle(0, 0, 1, Config.WINDOW_HEIGHT));
             Walls.Add(new Rectangle(Config.WINDOW_WIDTH, 0, 1, Config.WINDOW_HEIGHT));
+            Walls.Add(new Rectangle(0, 0, Config.WINDOW_WIDTH, 1));
+            Walls.Add(new Rectangle(0, Config.WINDOW_HEIGHT, Config.WINDOW_WIDTH, 1));
         }
     }
 }
