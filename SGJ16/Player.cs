@@ -26,8 +26,9 @@ namespace SGJ16
         public const int HeadSize = 20;
         public const int BodyHeight = 40;
         public const int LegHeight = DefaultPlayerHeight - HeadSize - BodyHeight;
-        public static Vector2 DefaultMissileOrigin = new Vector2(55, 40);
         public const int MaxFramesInAir = 15;
+        public static Vector2 DefaultGunOrigin = new Vector2(16, 7);
+        public static Vector2 DefaultGunPosition = new Vector2(5, 5 + HeadSize);
 
         private static int textureChangeRate = 25;
         private static short IdleTexturesNumber = 2;
@@ -69,16 +70,20 @@ namespace SGJ16
         public HpBar HpBar;
         public Aim Aim;
         public PlayerInput Input;
-
-        public Vector2 MissileOrigin;
+        
         public Vector2 AbsoluteMissileOrigin
         {
             get
             {
-                return CurrentPosition +
-                    (CurrentDirection == Direction.Right ?
-                    new Vector2(MissileOrigin.X, MissileOrigin.Y)
-                    : new Vector2(PlayerWidth - MissileOrigin.X, MissileOrigin.Y));
+                if (CurrentDirection == Direction.Right)
+                {
+                    return CurrentPosition + Gun.Position + Gun.Origin;
+                }
+                else
+                {
+                    return CurrentPosition + new Vector2(PlayerWidth - Gun.Position.X
+                        - Gun.Origin.X, Gun.Position.Y + Gun.Origin.Y);
+                }
             }
         }
 
@@ -111,7 +116,6 @@ namespace SGJ16
             PlayerHeight = DefaultPlayerHeight;
             PlayerWidth = DefaultPlayerWidth;
             setInitialPosition(isLeft);
-            MissileOrigin = DefaultMissileOrigin;
 
             IsFalling = false;
             framesInAir = 0;
@@ -126,17 +130,12 @@ namespace SGJ16
                 new Rectangle(BoundingBoxes[HitBox.Body].Left, BoundingBoxes[HitBox.Body].Bottom, PlayerWidth, LegHeight));
 
             Gun = new Gun(this);
-            Gun.Rectangle.Location = this.CurrentPosition.ToPoint();
+            Gun.Position = DefaultGunPosition;
+            Gun.Origin = DefaultGunOrigin;
 
             Aim = new Aim(this);
             Input = new PlayerInput();
-        }
-
-        public bool CheckCollision(Circle circle)
-        {
-            //return BoundingBoxes.Any(b => StaticMethods.CheckCollision(circle, b));
-            return false;
-        }
+        }        
 
         public void Draw(SpriteBatch batch)
         {
@@ -151,7 +150,7 @@ namespace SGJ16
 
             Gun.Draw(batch);
         }
-
+        
         public void Update()
         {
             if ((currentFrameNumber >= textureChangeRate && CurrentState == State.Standing)
@@ -167,7 +166,6 @@ namespace SGJ16
             }
             currentFrameNumber++;
 
-            Gun.Update();
             HpBar.Update();
         }
 
@@ -226,7 +224,6 @@ namespace SGJ16
                 CurrentState = State.InAir;
                 CurrentJumpSpeed = DefaultJumpSpeed;
             }
-
         }
 
         public bool CheckDamage(float basicDamage, Circle circle)

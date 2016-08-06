@@ -70,6 +70,7 @@ namespace SGJ16
 
         private static void findEmptySpace(PowerUp powerUp)
         {
+
             bool positionOK = false;
             Rectangle positionRect;
             while (!positionOK)
