@@ -13,11 +13,13 @@ namespace SGJ16
         public List<Player> Players { get; set; }
         public List<Rectangle> Walls { get; set; }
         public Texture2D MapTexture { get; set; }
+        public List<PowerUp> PowerUps { get; set; }
 
         public Map()
         {
             Players = new List<Player>();
             Walls = new List<Rectangle>();
+            PowerUps = new List<PowerUp>();
 
             SetBoundingWalls();
         }

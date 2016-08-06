@@ -147,6 +147,8 @@ namespace SGJ16
             testPlatformTexture = Content.Load<Texture2D>("testPlatform");
             Map.SetPlatforms();
 
+            PowerUpManager.map = Map;
+            PowerUpManager.Load(Content);
         }
 
         /// <summary>
@@ -180,6 +182,8 @@ namespace SGJ16
             UpdatePlayer(player1);
             UpdatePlayer(player2);
 
+            PowerUpManager.SpawnPowerUps();
+
             base.Update(gameTime);
         }
 
@@ -197,6 +201,10 @@ namespace SGJ16
             foreach (var item in displayableItems)
             {
                 item.Draw(spriteBatch);
+            }
+            foreach (var powerUp in Map.PowerUps)
+            {
+                powerUp.Draw(spriteBatch);
             }
             foreach (Missile missile in missiles)
             {
