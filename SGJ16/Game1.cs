@@ -30,7 +30,7 @@ namespace SGJ16
         HpBar p2HpBar;
         public static Vector2 HpBarPosition = new Vector2(36, 36);
 
-        Missiles missiles = new Missiles(60);
+        Missiles missiles;
 
         public Vector2 DisplayCenter
         {
@@ -55,6 +55,9 @@ namespace SGJ16
 
             p2Input = new PlayerInput();
             p2HpBar = new HpBar(player1);
+
+            Map = new Map();
+            missiles = new Missiles(Map, 60);
         }
 
         /// <summary>
@@ -101,8 +104,6 @@ namespace SGJ16
             p2Input.SetKey(GameKey.Pause, Keys.Space);
             p2Input.SetKey(GameKey.Quit, Keys.Escape);
 
-            
-            Map = new Map();
             player1.Map = Map;
             displayableItems = new List<IDisplayable>();
             

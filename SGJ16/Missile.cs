@@ -15,6 +15,7 @@ namespace SGJ16
         public float MaxDistance { get; set; }
         public float Speed { get; set; }
         public float Radius { get; set; }
+        public float Damage { get; set; }
     }
 
     public enum MissileModelType
@@ -81,6 +82,28 @@ namespace SGJ16
                 {
                     time = model.MaxDistance;
                     this.Dispose();
+                    return;
+                }
+                Map map = Map;
+                Circle circle = this.ToCircle();
+                foreach (Rectangle wall in map.Walls)
+                {
+                    float temp = StaticMethods.SqDistanceToRectangle(circle.Center, wall);
+
+                    if (StaticMethods.CheckCollision(circle, wall))
+                    {
+                        this.Dispose();
+                        return;
+                    }
+                }
+                float damage = Model.Damage;
+                foreach (Player player in map.Players)
+                {
+                    if (player.CheckDamage(damage, circle))
+                    {
+                        this.Dispose();
+                        return;
+                    }
                 }
             }
         }
@@ -88,6 +111,15 @@ namespace SGJ16
         public void Dispose()
         {
             missiles.DisposeMissile(this);
+        }
+
+        public Map Map { get { return missiles.Map; } }
+
+        public MissileModel Model { get { return missiles.Models[ModelType]; } }
+
+        private Circle ToCircle()
+        {
+            return new Circle(this.Position, Model.Radius);
         }
     }    
 }

@@ -16,11 +16,14 @@ namespace SGJ16
             public bool IsUsed;
         }
 
+        public Map Map { get; private set; }
+
         private List<MissileInfo> missiles;
         public Dictionary<MissileModelType, MissileModel> Models;
 
-        public Missiles(int capacity)
+        public Missiles(Map map, int capacity)
         {
+            Map = map;
             Models = new Dictionary<MissileModelType, MissileModel>();
             missiles = new List<MissileInfo>(capacity);
             for (int i = 0; i < capacity; i++)
