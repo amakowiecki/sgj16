@@ -21,8 +21,7 @@ namespace SGJ16
         KeyboardInput keyboard;
 
         List<IDisplayable> displayableItems;
-
-        //PlayerInput p2Input;
+        
         Player player1;
         Player player2;
         Map Map;

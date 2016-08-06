@@ -17,7 +17,7 @@ namespace SGJ16
 
         public const float MIN_AIM_ANGLE = -MathHelper.Pi * 5 / 12;
         public const float MAX_AIM_ANGLE = MathHelper.Pi * 5 / 12;
-        public const float AIM_STEP = MathHelper.Pi / 36;
+        public const float AIM_STEP = MathHelper.Pi / 52;
         public const float DISTANCE = 150;
 
         public const float MISSILE_FORCE = 1.5f;

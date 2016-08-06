@@ -26,6 +26,7 @@ namespace SGJ16
         public const int HeadSize = 20;
         public const int BodyHeight = 40;
         public const int LegHeight = DefaultPlayerHeight - HeadSize - BodyHeight;
+        public const int LegWidth = Config.PLAYER_WIDTH;
         public const int MaxFramesInAir = 15;
         public static Vector2 DefaultGunOrigin = new Vector2(16, 7);
         public static Vector2 DefaultGunPosition = new Vector2(5, 5 + HeadSize);
@@ -97,13 +98,6 @@ namespace SGJ16
             DamageModifiers = new Dictionary<HitBox, float>();
         }
 
-        private void setInitialPosition(bool isLeft)
-        {
-            CurrentPosition = new Vector2(
-                isLeft ? (float) Config.PLAYER_POSITION_X : Config.WINDOW_WIDTH - PlayerWidth - Config.PLAYER_POSITION_X,
-                (float) Config.WINDOW_HEIGHT - PlayerHeight - Config.GROUND_LEVEL);
-        }
-
         public Player(bool isLeft)
         {
             currentFrameNumber = 0;
@@ -127,7 +121,8 @@ namespace SGJ16
                 new Rectangle((int) CurrentPosition.X + (PlayerWidth - HeadSize) / 2,
                 BoundingBoxes[HitBox.Body].Top, HeadSize, HeadSize));
             BoundingBoxes.Add(HitBox.Legs,
-                new Rectangle(BoundingBoxes[HitBox.Body].Left, BoundingBoxes[HitBox.Body].Bottom, PlayerWidth, LegHeight));
+                new Rectangle((int)CurrentPosition.X + (PlayerWidth - LegWidth) / 2, BoundingBoxes[HitBox.Body].Bottom, 
+                LegWidth, LegHeight));
 
             Gun = new Gun(this);
             Gun.Position = DefaultGunPosition;
@@ -194,9 +189,8 @@ namespace SGJ16
             {
                 return false;
             }
-
-            if ((int) CurrentPosition.Y != Config.WINDOW_HEIGHT - PlayerHeight - Config.GROUND_LEVEL
-                && CurrentState != State.InAir)
+            
+            if (isStandingOnAnything())
             {
                 CurrentState = State.InAir;
                 IsFalling = true;
@@ -283,6 +277,20 @@ namespace SGJ16
         }
 
         /// <summary>
+        /// Czy stopy znajdują się na wierzchu czegokolwiek innego i czy nie jesteśmy w powietrzu.
+        /// </summary>
+        /// <returns></returns>
+        private bool isStandingOnAnything()
+        {
+            if (CurrentState == State.InAir) { return false; }
+            int playerBottom = (int)CurrentPosition.Y + PlayerHeight;
+            int minFeetX = BoundingBoxes[HitBox.Legs].X;
+            int maxFeetX = minFeetX + BoundingBoxes[HitBox.Legs].Width;
+            return !Map.Walls.Any(wall => { return wall.Top == 
+                playerBottom && minFeetX <= wall.Right && wall.Left <= maxFeetX; });
+        }
+
+        /// <summary>
         /// Zwraca odległość od obiektu z którym skolidowalibyśmy w następnym ruchu
         /// lub int.MaxValue jeśli nie ma żadnych kolizji
         /// </summary>
@@ -346,6 +354,10 @@ namespace SGJ16
             }
             else
             {
+                if (rect.Height == 0)
+                {
+                    return int.MaxValue;
+                }
                 inflatedRect = new Rectangle(rect.X, rect.Y, rect.Width, rect.Height + CurrentJumpSpeed);
             }
 
@@ -480,6 +492,13 @@ namespace SGJ16
             }
         }
 
+        private void setInitialPosition(bool isLeft)
+        {
+            CurrentPosition = new Vector2(
+                isLeft ? (float)Config.PLAYER_POSITION_X : Config.WINDOW_WIDTH - PlayerWidth - Config.PLAYER_POSITION_X,
+                (float)Config.WINDOW_HEIGHT - PlayerHeight - Config.GROUND_LEVEL);
+        }
+
         private void changePosition()
         {
             BoundingBoxes[HitBox.Body] =
@@ -487,7 +506,7 @@ namespace SGJ16
             BoundingBoxes[HitBox.Head] =
                 new Rectangle((int) CurrentPosition.X + (PlayerWidth - HeadSize) / 2, (int) CurrentPosition.Y, HeadSize, HeadSize);
             BoundingBoxes[HitBox.Legs] =
-                new Rectangle((int) CurrentPosition.X, (int) CurrentPosition.Y + HeadSize + BodyHeight, PlayerWidth, LegHeight);
+                new Rectangle((int) CurrentPosition.X + (PlayerWidth - LegWidth) / 2, (int) CurrentPosition.Y + HeadSize + BodyHeight, LegWidth, LegHeight);
         }
 
     }

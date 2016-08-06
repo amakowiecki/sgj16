@@ -38,7 +38,7 @@ namespace SGJ16
             Walls.Add(newPlatform);
             newPlatform = new Rectangle(579, 535, 69, 106);  //platforma na środku
             Walls.Add(newPlatform);
-            newPlatform = new Rectangle(717, 498, 175, 0); //trzepak
+            newPlatform = new Rectangle(727, 498, 175, 0); //trzepak
             Walls.Add(newPlatform);
             newPlatform = new Rectangle(813, 353, 170, 26); //przy drzewie
             Walls.Add(newPlatform);
