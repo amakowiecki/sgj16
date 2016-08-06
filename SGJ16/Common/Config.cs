@@ -20,5 +20,8 @@ namespace SGJ16
 
         public const float MISSILE_FORCE = 1.5f;
 
+        public const int PLAYER_HEIGHT = 113;
+        public const int PLAYER_WIDTH = 65;
+
     }
 }

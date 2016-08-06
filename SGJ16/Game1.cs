@@ -23,6 +23,7 @@ namespace SGJ16
         PlayerInput p2Input;
         Player player1;
         Map Map;
+        Texture2D testPlatformTexture;
 
         Aim p1Aim;
 
@@ -109,6 +110,10 @@ namespace SGJ16
             missiles.Models[MissileModelType.Basic].Texture = Content.Load<Texture2D>("pocisk");
 
             player1.playerTexture = Content.Load<Texture2D>("idle");
+            player1.Gun.Texture = Content.Load<Texture2D>("weapon");
+
+            testPlatformTexture = Content.Load<Texture2D>("testPlatform");
+            Map.SetPlatforms();
 
             // TODO: use this.Content to load your game content here
         }
@@ -178,6 +183,10 @@ namespace SGJ16
             foreach (Missile missile in missiles)
             {
                 missile.Draw(spriteBatch);
+            }
+            foreach (var platform in Map.Platforms)
+            {//tymczasowe,platformy będą na mapie
+                spriteBatch.Draw(testPlatformTexture, platform.Location.ToVector2(), Color.White);
             }
             spriteBatch.Draw(p1Aim.Texture, p1Aim.Position - p1Aim.Texture.GetHalfSize(), Color.White);
 

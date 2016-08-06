@@ -18,8 +18,8 @@ namespace SGJ16
 
     public class Player : IDisplayable
     {
-        public const int DefaultPlayerHeight = 128;
-        public const int DefaultPlayerWidth = 65;
+        public const int DefaultPlayerHeight = Config.PLAYER_HEIGHT;
+        public const int DefaultPlayerWidth = Config.PLAYER_WIDTH;
         public const int DefaultSpeed = 10;
         public const int DefaultJumpSpeed = 15;
         public const float DefaultHP = 100;
@@ -27,7 +27,7 @@ namespace SGJ16
         public const int BodyHeight = 40;
         public const int LegHeight = DefaultPlayerHeight - HeadSize - BodyHeight;
         public static Vector2 DefaultMissileOrigin = new Vector2(55, 40);
-        public const int MaxFramesInAir = 30;
+        public const int MaxFramesInAir = 15;
 
         private static int textureChangeRate = 5;
         private static short IdleTexturesNumber = 1;
@@ -45,6 +45,8 @@ namespace SGJ16
         public int CurrentSpeed;
         public int CurrentJumpSpeed;
         public Direction CurrentDirection;
+
+        public Gun Gun;
 
         public Vector2 MissileOrigin;
         public Vector2 AbsoluteMissileOrigin
@@ -87,6 +89,9 @@ namespace SGJ16
                 BoundingBoxes[HitBox.Body].Top, HeadSize, HeadSize));
             BoundingBoxes.Add(HitBox.Legs,
                 new Rectangle(BoundingBoxes[HitBox.Body].Left, BoundingBoxes[HitBox.Body].Bottom, PlayerWidth, LegHeight));
+
+            Gun = new Gun(this);
+            Gun.Rectangle.Location = this.CurrentPosition.ToPoint();
         }
 
         public bool CheckCollision(Circle circle)
@@ -161,7 +166,7 @@ namespace SGJ16
             {
                 inflatedRect = new Rectangle(rect.X, rect.Y, rect.Width, rect.Height + CurrentJumpSpeed);
             }
-            
+
             int smallestDistance = int.MaxValue;
             int distance = 0;
             foreach (var hitBox in BoundingBoxes.Values)
@@ -195,6 +200,8 @@ namespace SGJ16
             {
                 batch.Draw(playerTexture, CurrentPosition, getCurrentTextureBox(), Color.White);
             }
+
+            Gun.Draw(batch);
         }
 
         public void Update()
@@ -209,6 +216,8 @@ namespace SGJ16
             {
                 flyLikeAFuckingBird();
             }
+
+            Gun.Update();
         }
 
         public bool Move(Direction direction)
@@ -217,7 +226,7 @@ namespace SGJ16
             {
                 CurrentState = State.Walking;
             }
-            
+
             CurrentDirection = direction;
             int distance = int.MaxValue;
             foreach (var wall in Map.Walls)
@@ -236,6 +245,13 @@ namespace SGJ16
             {
                 return false;
             }
+
+            if (CurrentPosition.Y != Config.WINDOW_HEIGHT - PlayerHeight)
+            {
+                CurrentState = State.InAir;
+                IsFalling = true;
+            }
+
             switch (direction)
             {
                 case Direction.Left:
@@ -258,12 +274,14 @@ namespace SGJ16
                 CurrentState = State.InAir;
                 CurrentJumpSpeed = DefaultJumpSpeed;
             }
-            
+
         }
 
         private bool flyLikeAFuckingBird()
         {
-            // CurrentJumpSpeed =  Log//(CurrentJumpSpeed/(((framesInAir)/2)+1))+5;
+            //CurrentJumpSpeed = (CurrentJumpSpeed/(((framesInAir)/2)+1))+5;
+            CurrentJumpSpeed = CurrentJumpSpeed * 2 / (int) Math.Ceiling(Math.Log(framesInAir + 2)) + 1;
+            // CurrentJumpSpeed -= 10 * ((framesInAir / 60) + 1);
             if (framesInAir >= MaxFramesInAir)
             {
                 IsFalling = true;
@@ -271,21 +289,31 @@ namespace SGJ16
             int distance = int.MaxValue;
             foreach (var wall in Map.Walls)
             {
-                distance = checkVerticalCollision(wall);
-            }            
+                int d = checkVerticalCollision(wall);
+                if (d < distance)
+                {
+                    distance = d;
+                }
+            }
 
             if (IsFalling)
             {
-                
                 if (framesInAir <= 0)
                 {
                     framesInAir = 0;
+                    CurrentJumpSpeed = DefaultJumpSpeed;
                 }
                 else
                 {
                     framesInAir--;
                 }
                 CurrentPosition.Y += distance == int.MaxValue ? CurrentJumpSpeed : distance;
+                if (CurrentPosition.Y + PlayerHeight > Config.WINDOW_HEIGHT)
+                {
+                    CurrentPosition.Y = Config.PLAYER_HEIGHT - PlayerHeight;
+                    IsFalling = false;
+                    CurrentState = State.Standing;
+                }
             }
             else
             {
@@ -356,9 +384,9 @@ namespace SGJ16
             BoundingBoxes[HitBox.Body] =
                 new Rectangle((int) CurrentPosition.X, (int) CurrentPosition.Y + HeadSize, PlayerWidth, BodyHeight);
             BoundingBoxes[HitBox.Head] =
-                new Rectangle((int) CurrentPosition.X + (PlayerWidth - HeadSize) / 2, (int)CurrentPosition.Y, HeadSize, HeadSize);
+                new Rectangle((int) CurrentPosition.X + (PlayerWidth - HeadSize) / 2, (int) CurrentPosition.Y, HeadSize, HeadSize);
             BoundingBoxes[HitBox.Legs] =
-                new Rectangle((int) CurrentPosition.X, (int)CurrentPosition.Y + HeadSize + BodyHeight, PlayerWidth, LegHeight);
+                new Rectangle((int) CurrentPosition.X, (int) CurrentPosition.Y + HeadSize + BodyHeight, PlayerWidth, LegHeight);
         }
 
     }
