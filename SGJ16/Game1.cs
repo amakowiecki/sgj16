@@ -1,25 +1,36 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
+using System.Collections.Generic;
 
 namespace SGJ16
 {
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
+    /// 
     public class Game1 : Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        public static Point DisplaySize { get { return new Point(1200, 850); } }
+        public static Point DisplaySize { get { return new Point(Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT); } }
 
         KeyboardInput keyboard;
 
         PlayerInput p1Input;
         PlayerInput p2Input;
 
-        Texture2D sample;
+        Aim p1Aim;
+        MissileModel missileModel = new MissileModel { MaxDistance = 500 , Speed = 5.0f };
+
+        List<Missile> missiles = new List<Missile>();
+
+        public Vector2 DisplayCenter
+        {
+            get { return DisplaySize.ToVector2() / 2; }
+        }
 
         public Game1()
         {
@@ -36,6 +47,8 @@ namespace SGJ16
 
             p1Input = new PlayerInput();
             p2Input = new PlayerInput();
+
+            p1Aim = new Aim();
         }
 
         /// <summary>
@@ -47,6 +60,8 @@ namespace SGJ16
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+
+            Aim.Initialize(Config.MIN_AIM_ANGLE, Config.MAX_AIM_ANGLE, Config.AIM_STEP, Config.DISTANCE);
 
             p1Input.SetKey(GameKey.MoveLeft, Keys.Left);
             p1Input.SetKey(GameKey.MoveRight, Keys.Right);
@@ -77,8 +92,10 @@ namespace SGJ16
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            
+            p1Aim.Texture = Content.Load<Texture2D>("aim");
 
-            sample = Content.Load<Texture2D>("pocisk");
+            missileModel.Texture = Content.Load<Texture2D>("pocisk");
 
             // TODO: use this.Content to load your game content here
         }
@@ -105,8 +122,12 @@ namespace SGJ16
             }
 
             keyboard.Update();
+            UpdateAim(p1Aim, p1Input);
 
-            // TODO: Add your update logic here
+            foreach (Missile missile in missiles)
+            {
+                missile.Update();
+            }
 
             base.Update(gameTime);
         }
@@ -117,22 +138,16 @@ namespace SGJ16
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            if (IsKeyPressed(p1Input, GameKey.Shot))
-            {
-                GraphicsDevice.Clear(Color.DarkRed);
-            }
-            else if (IsKeyPressed(p2Input, GameKey.Shot))
-            {
-                GraphicsDevice.Clear(Color.DarkGreen);
-            }
-            else
-            {
-                GraphicsDevice.Clear(Color.DarkSalmon);
-            }
+            GraphicsDevice.Clear(new Color(96, 96, 96));
 
             spriteBatch.Begin();
 
-            spriteBatch.Draw(sample, DisplaySize.ToVector2() / 2 - new Vector2(sample.Width, sample.Height), Color.White * 0.5f);
+            spriteBatch.Draw(p1Aim.Texture, DisplayCenter + p1Aim.GetRelativePosition() 
+                - p1Aim.Texture.GetHalfSize(), Color.White);
+            foreach (Missile missile in missiles)
+            {
+                missile.Draw(spriteBatch);
+            }
 
             spriteBatch.End();
 
@@ -152,6 +167,30 @@ namespace SGJ16
         private bool IsKeyDown(PlayerInput playerInput, GameKey key)
         {
             return keyboard.IsKeyDown(playerInput.GetKey(key));
+        }
+
+        private void CreateMissile(Aim aim)
+        {
+            missiles.Add(new Missile(missileModel, DisplayCenter, 
+                Config.MISSILE_FORCE * StaticMethods.NormalVectorInDirection(aim.Angle)));
+        }
+
+        private void UpdateAim(Aim aim, PlayerInput playerInput)
+        {
+            bool upPressed = IsKeyPressed(playerInput, GameKey.LookUp);
+            bool downPressed = IsKeyPressed(playerInput, GameKey.LookDown);
+            if (upPressed && !downPressed)
+            {
+                aim.DecreaseAngle();
+            }
+            else if (downPressed && !upPressed)
+            {
+                aim.IncreaseAngle();
+            }
+            if (IsKeyDown(playerInput, GameKey.Shot))
+            {
+                CreateMissile(aim);
+            }
         }
     }
 }

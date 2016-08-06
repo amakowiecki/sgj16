@@ -38,6 +38,8 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Aim.cs" />
+    <Compile Include="Common\Angle.cs" />
     <Compile Include="Common\Config.cs" />
     <Compile Include="Common\StaticMethods.cs" />
     <Compile Include="Game1.cs" />
@@ -45,6 +47,7 @@
     <Compile Include="Keyboard\GameKey.cs" />
     <Compile Include="Keyboard\KeyboardInput.cs" />
     <Compile Include="Keyboard\PlayerInput.cs" />
+    <Compile Include="Missile.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
