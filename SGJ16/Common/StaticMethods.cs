@@ -29,10 +29,10 @@ namespace SGJ16
         {
             float x = point.X, y = point.Y;
 
-            float xRes = (x < rectangle.X) ? rectangle.X - x
-                : (x > rectangle.X) ? x - rectangle.X : 0;
-            float yRes = (y < rectangle.Y) ? rectangle.Y - y
-                : (y > rectangle.Y) ? y - rectangle.Y : 0;
+            float xRes = (x < rectangle.Left) ? rectangle.Left - x
+                : (x > rectangle.Right) ? x - rectangle.Right : 0;
+            float yRes = (y < rectangle.Top) ? rectangle.Top - y
+                : (y > rectangle.Bottom) ? y - rectangle.Bottom : 0;
 
             return Sqr(xRes) + Sqr(yRes);
         }

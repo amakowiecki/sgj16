@@ -27,7 +27,7 @@ namespace SGJ16
             Walls.Add(new Rectangle(0, 0, 1, Config.WINDOW_HEIGHT));
             Walls.Add(new Rectangle(Config.WINDOW_WIDTH, 0, 1, Config.WINDOW_HEIGHT));
             Walls.Add(new Rectangle(0, 0, Config.WINDOW_WIDTH, 1));
-            Walls.Add(new Rectangle(0, Config.WINDOW_HEIGHT, Config.WINDOW_WIDTH, 1));
+            Walls.Add(new Rectangle(0, Config.WINDOW_HEIGHT - Config.GROUND_LEVEL, Config.WINDOW_WIDTH, Config.GROUND_LEVEL));
         }
 
         public void SetPlatforms()
@@ -36,7 +36,7 @@ namespace SGJ16
             Walls.Add(newPlatform);
             newPlatform = new Rectangle(579, 535, 69, 106);  //platforma na środku
             Walls.Add(newPlatform);
-            newPlatform = new Rectangle(717, 498, 175, 6); //trzepak
+            newPlatform = new Rectangle(717, 498, 175, 0); //trzepak
             Walls.Add(newPlatform);
             newPlatform = new Rectangle(813, 353, 170, 26); //przy drzewie
             Walls.Add(newPlatform);

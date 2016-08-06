@@ -35,7 +35,18 @@ namespace SGJ16
 
         public int PlayerHeight;
         public int PlayerWidth;
-        public Map Map;
+        public Map Map
+        {
+            get { return map; }
+            set
+            {
+                if (!value.Players.Contains(this))
+                {
+                    map = value;
+                    value.Players.Add(this);
+                }
+            }
+        }
         public Vector2 CurrentPosition;
         public Dictionary<HitBox, Rectangle> BoundingBoxes;
         public Texture2D playerTexture;
@@ -66,6 +77,7 @@ namespace SGJ16
             }
         }
 
+        private Map map;
         private short currentFrameNumber; //0 <= x < frameChangeRate 
         private short currentTextureNumber; //0 <= x < texturesNumber
         private int framesInAir;
@@ -75,10 +87,17 @@ namespace SGJ16
             DamageModifiers = new Dictionary<HitBox, float>();
         }
 
+        private void setInitialPosition(bool isLeft)
+        {
+            CurrentPosition = new Vector2(
+                isLeft ? (float)Config.PLAYER_POSITION_X : Config.WINDOW_WIDTH - PlayerWidth - Config.PLAYER_POSITION_X,
+                (float)Config.WINDOW_HEIGHT - PlayerHeight - Config.GROUND_LEVEL);
+        }
+
         public Player(bool isLeft)
         {
             currentFrameNumber = 0;
-            CurrentDirection = isLeft ? Direction.Left : Direction.Right;
+            CurrentDirection = isLeft ? Direction.Right : Direction.Left;
             currentTextureNumber = 0;
             CurrentState = State.Standing;
             CurrentHp = MaxHp = DefaultHP;
@@ -86,7 +105,7 @@ namespace SGJ16
             CurrentJumpSpeed = DefaultJumpSpeed;
             PlayerHeight = DefaultPlayerHeight;
             PlayerWidth = DefaultPlayerWidth;
-            CurrentPosition = new Vector2((float) Config.WINDOW_WIDTH / 2, (float) Config.WINDOW_HEIGHT - PlayerHeight);
+            setInitialPosition(isLeft);
             MissileOrigin = DefaultMissileOrigin;
 
             IsFalling = false;

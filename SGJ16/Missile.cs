@@ -88,9 +88,6 @@ namespace SGJ16
                 Circle circle = this.ToCircle();
                 foreach (Rectangle wall in map.Walls)
                 {
-                    float temp = StaticMethods.SqDistanceToRectangle(circle.Center, wall);
-                    if (wall == )
-
                     if (StaticMethods.CheckCollision(circle, wall))
                     {
                         this.Dispose();
@@ -118,7 +115,7 @@ namespace SGJ16
 
         public MissileModel Model { get { return missiles.Models[ModelType]; } }
 
-        private Circle ToCircle()
+        public Circle ToCircle()
         {
             return new Circle(this.Position, Model.Radius);
         }
