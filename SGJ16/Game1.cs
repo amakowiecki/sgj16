@@ -146,7 +146,6 @@ namespace SGJ16
             testPlatformTexture = Content.Load<Texture2D>("testPlatform");
             Map.SetPlatforms();
 
-            // TODO: use this.Content to load your game content here
         }
 
         /// <summary>
@@ -221,13 +220,14 @@ namespace SGJ16
 
             spriteBatch.Begin();
             
-            foreach (Missile missile in missiles)
-            {
-                missile.Draw(spriteBatch);
-            }
+          
             foreach (var item in displayableItems)
             {
                 item.Draw(spriteBatch);
+            }
+            foreach (Missile missile in missiles)
+            {
+                missile.Draw(spriteBatch);
             }
             spriteBatch.Draw(p1Aim.Texture, p1Aim.Position - p1Aim.Texture.GetHalfSize(), Color.White);
 
