@@ -49,6 +49,8 @@ namespace SGJ16
 
         public Gun Gun;
         public HpBar HpBar;
+        public Aim Aim;
+        public PlayerInput Input;
 
         public Vector2 MissileOrigin;
         public Vector2 AbsoluteMissileOrigin
@@ -94,6 +96,9 @@ namespace SGJ16
 
             Gun = new Gun(this);
             Gun.Rectangle.Location = this.CurrentPosition.ToPoint();
+
+            Aim = new Aim(this);
+            Input = new PlayerInput();
         }
 
         public bool CheckCollision(Circle circle)

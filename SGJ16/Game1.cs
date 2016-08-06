@@ -21,13 +21,10 @@ namespace SGJ16
 
         List<IDisplayable> displayableItems;
 
-        PlayerInput p1Input;
         PlayerInput p2Input;
         Player player1;
         Map Map;
         Texture2D testPlatformTexture;
-
-        Aim p1Aim;
 
         HpBar p1HpBar;
         HpBar p2HpBar;
@@ -54,8 +51,6 @@ namespace SGJ16
             keyboard = new KeyboardInput();
 
             player1 = new Player(false);
-            p1Input = new PlayerInput();
-            p1Aim = new Aim(player1);
             p1HpBar = new HpBar(player1);
 
             p2Input = new PlayerInput();
@@ -88,14 +83,14 @@ namespace SGJ16
                     InitialDistance = 20
                 });
 
-            p1Input.SetKey(GameKey.MoveLeft, Keys.Left);
-            p1Input.SetKey(GameKey.MoveRight, Keys.Right);
-            p1Input.SetKey(GameKey.LookUp, Keys.Up);
-            p1Input.SetKey(GameKey.LookDown, Keys.Down);
-            p1Input.SetKey(GameKey.Jump, Keys.Z);
-            p1Input.SetKey(GameKey.Shot, Keys.X);
-            p1Input.SetKey(GameKey.Pause, Keys.Space);
-            p1Input.SetKey(GameKey.Quit, Keys.Escape);
+            player1.Input.SetKey(GameKey.MoveLeft, Keys.Left);
+            player1.Input.SetKey(GameKey.MoveRight, Keys.Right);
+            player1.Input.SetKey(GameKey.LookUp, Keys.Up);
+            player1.Input.SetKey(GameKey.LookDown, Keys.Down);
+            player1.Input.SetKey(GameKey.Jump, Keys.Z);
+            player1.Input.SetKey(GameKey.Shot, Keys.X);
+            player1.Input.SetKey(GameKey.Pause, Keys.Space);
+            player1.Input.SetKey(GameKey.Quit, Keys.Escape);
 
             p2Input.SetKey(GameKey.MoveLeft, Keys.A);
             p2Input.SetKey(GameKey.MoveRight, Keys.D);
@@ -125,9 +120,7 @@ namespace SGJ16
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-            
-            p1Aim.Texture = Content.Load<Texture2D>("aim");
+            spriteBatch = new SpriteBatch(GraphicsDevice);            
 
             missiles.Models[MissileModelType.Basic].Texture = Content.Load<Texture2D>("pocisk");
 
@@ -141,6 +134,7 @@ namespace SGJ16
 
             player1.playerTexture = Content.Load<Texture2D>("idle");
             player1.Gun.Texture = Content.Load<Texture2D>("weapon");
+            player1.Aim.Texture = Content.Load<Texture2D>("aim");
 
             Map.MapTexture = Content.Load<Texture2D>("background1st");
             testPlatformTexture = Content.Load<Texture2D>("testPlatform");
@@ -163,49 +157,20 @@ namespace SGJ16
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
-        {
-            if (IsKeyPressed(p1Input, GameKey.Quit) || IsKeyPressed(p2Input, GameKey.Quit))
-            {
-                Exit();
-            }
-
+        {     
             keyboard.Update();
-            UpdateAim(p1Aim, p1Input);
 
             foreach (Missile missile in missiles)
             {
                 missile.Update();
             }
 
-            if (IsKeyDown(p1Input, GameKey.Jump))
-            {
-                player1.Jump();
-            }
-
-            if (IsKeyPressed(p1Input, GameKey.MoveLeft))
-            {                
-                player1.Move(Direction.Left);
-            }
-            else if (IsKeyPressed(p1Input, GameKey.MoveRight))
-            {
-                player1.Move(Direction.Right);
-            }          
-            else if(player1.CurrentState != State.InAir)
-            {
-                player1.CurrentState = State.Standing;
-            }
-            player1.Update();
-            
-            player1.CurrentHp -= 1;
-            if (player1.CurrentHp < 0)
-                player1.CurrentHp = 0;
-
-
             foreach (var item in displayableItems)
             {
                 item.Update();
             }
 
+            UpdatePlayer(player1);
 
             base.Update(gameTime);
         }
@@ -229,7 +194,9 @@ namespace SGJ16
             {
                 missile.Draw(spriteBatch);
             }
-            spriteBatch.Draw(p1Aim.Texture, p1Aim.Position - p1Aim.Texture.GetHalfSize(), Color.White);
+
+            Aim aim = player1.Aim;
+            spriteBatch.Draw(aim.Texture, aim.Position - aim.Texture.GetHalfSize(), Color.White);
 
             DrawHpBar(p1HpBar);
             DrawHpBar(p2HpBar);
@@ -287,6 +254,35 @@ namespace SGJ16
                 float width = bar.VisibleHpPercentage * texture.Width;                
                 spriteBatch.Draw(texture, bar.Position, new Rectangle(0, 0, (int)width, texture.Height), Color.White);
             }
+        }
+
+        private void UpdatePlayer(Player player)
+        {
+            PlayerInput pInput = player.Input;
+            UpdateAim(player.Aim, pInput);
+
+            if (IsKeyPressed(pInput, GameKey.Quit))
+            {
+                Exit();
+            }
+            if (IsKeyDown(pInput, GameKey.Jump))
+            {
+                player.Jump();
+            }
+
+            if (IsKeyPressed(pInput, GameKey.MoveLeft))
+            {
+                player.Move(Direction.Left);
+            }
+            else if (IsKeyPressed(pInput, GameKey.MoveRight))
+            {
+                player.Move(Direction.Right);
+            }
+            else if (player.CurrentState != State.InAir)
+            {
+                player.CurrentState = State.Standing;
+            }
+            //player.Update();
         }
     }
 }
