@@ -27,5 +27,7 @@ namespace SGJ16
 
         public const float HP_BAR_PERC_STEP = 1.15f;
 
+        public const int BASIC_HEAL = 20;
+
     }
 }
