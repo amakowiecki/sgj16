@@ -53,7 +53,7 @@ namespace SGJ16
 
         public static Vector2 GetHalfSize(this Texture2D texture)
         {
-            return new Vector2(texture.Width, texture.Height);
+            return new Vector2(texture.Width / 2, texture.Height / 2);
         }
     }
 }

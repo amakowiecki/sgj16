@@ -11,24 +11,43 @@ namespace SGJ16
     public class MissileModel
     {
         public Texture2D Texture { get; set; }
+        public float InitialDistance { get; set; }
         public float MaxDistance { get; set; }
         public float Speed { get; set; }
         public float Radius { get; set; }
     }
 
+    public enum MissileModelType
+    {
+        Empty,
+        Basic
+    }
+
     public class Missile : IDisplayable
     {
-        public MissileModel Model;
+        private Missiles missiles;
+        internal int collectionIdx;
 
-        private float time;
-        private Vector2 initialPositon;
-        private Vector2 initialVelocity;
+        public MissileModelType ModelType;
+        internal float time;
+        internal Vector2 initialPositon;
+        internal Vector2 initialVelocity;
 
-        public Missile(MissileModel model, Vector2 initialPositon, Vector2 initialVelocity)
+        /// <summary>
+        /// Nie ruszać. Nie wywoływać.
+        /// </summary>
+        internal Missile(Missiles collection, int index)
         {
-            Model = model;
+            missiles = collection;
+            collectionIdx = index;
+        }
+
+        public void Initialize(MissileModelType modelType, Vector2 initialPositon, Vector2 velocity)
+        {
+            ModelType = modelType;
+            time = missiles.GetMissileModel(ModelType).InitialDistance;
             this.initialPositon = initialPositon;
-            this.initialVelocity = initialVelocity;
+            this.initialVelocity = velocity;
         }
 
         public Vector2 Position
@@ -42,19 +61,33 @@ namespace SGJ16
 
         public void Draw(SpriteBatch batch)
         {
-            Vector2 halfSize = Model.Texture.GetHalfSize();
-            batch.Draw(Model.Texture, Position - halfSize, null, Color.White, 
-                (float)Math.Atan2(initialVelocity.Y, initialVelocity.X), 
-                halfSize, 1.0f, SpriteEffects.None, 1.0f);
+            MissileModel model = missiles.GetMissileModel(ModelType);
+            if (model != null)
+            {
+                Vector2 halfSize = model.Texture.GetHalfSize();
+                batch.Draw(model.Texture, Position - halfSize, null, Color.White,
+                    (float)Math.Atan2(initialVelocity.Y, initialVelocity.X),
+                    halfSize, 1.0f, SpriteEffects.None, 1.0f);
+            }
         }
 
         public void Update()
         {
-            time += Model.Speed;
-            if (time > Model.MaxDistance)
+            MissileModel model = missiles.GetMissileModel(ModelType);
+            if (model != null)
             {
-                time = Model.MaxDistance;
+                time += model.Speed;
+                if (time > model.MaxDistance)
+                {
+                    time = model.MaxDistance;
+                    this.Dispose();
+                }
             }
         }
-    }
+
+        public void Dispose()
+        {
+            missiles.DisposeMissile(this);
+        }
+    }    
 }

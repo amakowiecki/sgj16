@@ -26,6 +26,7 @@ namespace SGJ16
         public const int HeadSize = 20;
         public const int BodyHeight = 40;
         public const int LegHeight = DefaultPlayerHeight - HeadSize - BodyHeight;
+        public static Vector2 DefaultMissileOrigin = new Vector2(55, 40);
 
         private static int textureChangeRate = 5;
         private static short IdleTexturesNumber = 1;
@@ -42,6 +43,19 @@ namespace SGJ16
         public int CurrentSpeed;
         public int CurrentJumpSpeed;
         public Direction CurrentDirection;
+
+        public Vector2 MissileOrigin;
+        public Vector2 AbsoluteMissileOrigin
+        {
+            get
+            {
+                return CurrentPosition +
+                    (CurrentDirection == Direction.Right ?
+                    new Vector2(MissileOrigin.X, MissileOrigin.Y)
+                    : new Vector2(PlayerWidth - MissileOrigin.X, MissileOrigin.Y));
+            }
+        }
+
         private short currentFrameNumber; //0 <= x < frameChangeRate 
         private short currentTextureNumber; //0 <= x < texturesNumber
 
@@ -56,6 +70,7 @@ namespace SGJ16
             PlayerHeight = DefaultPlayerHeight;
             PlayerWidth = DefaultPlayerWidth;
             CurrentPosition = new Vector2((float) Config.WINDOW_WIDTH / 2, (float) Config.WINDOW_HEIGHT - PlayerHeight);
+            MissileOrigin = DefaultMissileOrigin;
 
             BoundingBoxes = new Dictionary<HitBox, Rectangle>();
             BoundingBoxes.Add(HitBox.Body,

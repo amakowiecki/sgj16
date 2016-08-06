@@ -9,7 +9,7 @@ namespace SGJ16
 {
     public class Config
     {
-        public const int WINDOW_WIDTH = 640;
+        public const int WINDOW_WIDTH = 1280;
         public const int WINDOW_HEIGHT = 640;
         public const float GRAV_FORCE = 9.81f;
 

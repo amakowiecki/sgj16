@@ -25,9 +25,8 @@ namespace SGJ16
         Map Map;
 
         Aim p1Aim;
-        MissileModel missileModel = new MissileModel { MaxDistance = 500 , Speed = 5.0f };
 
-        List<Missile> missiles = new List<Missile>();
+        Missiles missiles = new Missiles(60);
 
         public Vector2 DisplayCenter
         {
@@ -47,10 +46,11 @@ namespace SGJ16
 
             keyboard = new KeyboardInput();
 
+            player1 = new Player(false);
             p1Input = new PlayerInput();
-            p2Input = new PlayerInput();
+            p1Aim = new Aim(player1);
 
-            p1Aim = new Aim();
+            p2Input = new PlayerInput();
         }
 
         /// <summary>
@@ -61,9 +61,16 @@ namespace SGJ16
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             Aim.Initialize(Config.MIN_AIM_ANGLE, Config.MAX_AIM_ANGLE, Config.AIM_STEP, Config.DISTANCE);
+
+            missiles.Models.Add(MissileModelType.Basic,
+                new MissileModel
+                {
+                    MaxDistance = 640,
+                    Speed = 12.0f,
+                    Radius = 4,
+                    InitialDistance = 20
+                });
 
             p1Input.SetKey(GameKey.MoveLeft, Keys.Left);
             p1Input.SetKey(GameKey.MoveRight, Keys.Right);
@@ -83,8 +90,6 @@ namespace SGJ16
             p2Input.SetKey(GameKey.Pause, Keys.Space);
             p2Input.SetKey(GameKey.Quit, Keys.Escape);
 
-
-            player1 = new Player(false);
             Map = new Map();
             player1.Map = Map;
             base.Initialize();
@@ -101,7 +106,7 @@ namespace SGJ16
             
             p1Aim.Texture = Content.Load<Texture2D>("aim");
 
-            missileModel.Texture = Content.Load<Texture2D>("pocisk");
+            missiles.Models[MissileModelType.Basic].Texture = Content.Load<Texture2D>("pocisk");
 
             player1.playerTexture = Content.Load<Texture2D>("idle");
 
@@ -153,7 +158,6 @@ namespace SGJ16
             }
             player1.Update();
 
-
             base.Update(gameTime);
         }
 
@@ -167,15 +171,12 @@ namespace SGJ16
 
             spriteBatch.Begin();
 
-            spriteBatch.Draw(p1Aim.Texture, DisplayCenter + p1Aim.GetRelativePosition() 
-                - p1Aim.Texture.GetHalfSize(), Color.White);
+            player1.Draw(spriteBatch);
             foreach (Missile missile in missiles)
             {
                 missile.Draw(spriteBatch);
             }
-            //spriteBatch.Draw(sample, DisplaySize.ToVector2() / 2 - new Vector2(sample.Width, sample.Height), Color.White * 0.5f);
-
-            player1.Draw(spriteBatch);
+            spriteBatch.Draw(p1Aim.Texture, p1Aim.Position - p1Aim.Texture.GetHalfSize(), Color.White);
 
             spriteBatch.End();
 
@@ -199,8 +200,8 @@ namespace SGJ16
 
         private void CreateMissile(Aim aim)
         {
-            missiles.Add(new Missile(missileModel, DisplayCenter, 
-                Config.MISSILE_FORCE * StaticMethods.NormalVectorInDirection(aim.Angle)));
+            missiles.InitializeMissile(MissileModelType.Basic, aim.Player.AbsoluteMissileOrigin, 
+                Config.MISSILE_FORCE * aim.GetMissileVelocity());
         }
 
         private void UpdateAim(Aim aim, PlayerInput playerInput)
