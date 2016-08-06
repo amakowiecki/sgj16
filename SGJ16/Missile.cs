@@ -89,6 +89,7 @@ namespace SGJ16
                 foreach (Rectangle wall in map.Walls)
                 {
                     float temp = StaticMethods.SqDistanceToRectangle(circle.Center, wall);
+                    if (wall == )
 
                     if (StaticMethods.CheckCollision(circle, wall))
                     {

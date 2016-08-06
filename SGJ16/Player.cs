@@ -398,8 +398,12 @@ namespace SGJ16
             changePosition();
             if (distance != int.MaxValue)
             {
-                CurrentState = State.Standing;
-                IsFalling = false;
+                if (IsFalling)
+                {
+                    IsFalling = false;
+                    CurrentState = State.Standing;
+                }
+                else IsFalling = true;
                 framesInAir = 0;
                 currentTextureNumber = 0;
                 return false;
