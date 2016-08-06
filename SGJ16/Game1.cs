@@ -85,7 +85,7 @@ namespace SGJ16
                     MaxDistance = 640,
                     Speed = 11.0f,
                     Radius = 4,
-                    InitialDistance = 20,
+                    InitialDistance = 50,
                     Damage = 10
                 });
 
@@ -290,7 +290,6 @@ namespace SGJ16
             {
                 Exit();
             }
-
 
             if (IsKeyPressed(pInput, GameKey.MoveLeft))
             {

@@ -60,7 +60,7 @@ namespace SGJ16
         private static void findEmptySpace(PowerUp powerUp)
         {
             bool positionOK = true;
-            while (true)
+            /*while (true)
             {
                 Rectangle positionRect = new Rectangle(new Point(RNG.Next(0, Config.WINDOW_WIDTH), RNG.Next(0, Config.WINDOW_HEIGHT)), powerUp.rectangle.Size);
                 foreach (var wall in map.Walls)
@@ -77,7 +77,7 @@ namespace SGJ16
                 }
                 powerUp.rectangle = positionRect;
                 return;
-            }
+            //}*/
         }
 
         public static void SpawnPowerUps()
