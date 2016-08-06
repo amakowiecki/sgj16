@@ -57,6 +57,11 @@ namespace SGJ16
         public int CurrentSpeed;
         public int CurrentJumpSpeed;
         public Direction CurrentDirection;
+        public Rectangle rect
+        {
+            get
+            { return new Rectangle(CurrentPosition.ToPoint(), new Point(PlayerWidth, PlayerHeight)); }
+        }
 
         public static Dictionary<HitBox, float> DamageModifiers;
 
@@ -90,8 +95,8 @@ namespace SGJ16
         private void setInitialPosition(bool isLeft)
         {
             CurrentPosition = new Vector2(
-                isLeft ? (float)Config.PLAYER_POSITION_X : Config.WINDOW_WIDTH - PlayerWidth - Config.PLAYER_POSITION_X,
-                (float)Config.WINDOW_HEIGHT - PlayerHeight - Config.GROUND_LEVEL);
+                isLeft ? (float) Config.PLAYER_POSITION_X : Config.WINDOW_WIDTH - PlayerWidth - Config.PLAYER_POSITION_X,
+                (float) Config.WINDOW_HEIGHT - PlayerHeight - Config.GROUND_LEVEL);
         }
 
         public Player(bool isLeft)
@@ -148,9 +153,9 @@ namespace SGJ16
         }
 
         public void Update()
-        {            
+        {
             if ((currentFrameNumber >= textureChangeRate && CurrentState == State.Standing)
-                ||( currentFrameNumber*3 >= textureChangeRate && CurrentState == State.Walking))
+                || (currentFrameNumber * 3 >= textureChangeRate && CurrentState == State.Walking))
             {
                 currentFrameNumber = 0;
                 updateTextureNumber();
@@ -429,7 +434,7 @@ namespace SGJ16
             }
             return true;
         }
-        
+
         private Rectangle getCurrentTextureBox()
         {
             Rectangle result;

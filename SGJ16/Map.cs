@@ -44,7 +44,7 @@ namespace SGJ16
             Walls.Add(newPlatform);
             newPlatform = new Rectangle(0, 512, 151, 129);
             Walls.Add(newPlatform);
-            newPlatform = new Rectangle(1091, 503, 189, 139);
+            newPlatform = new Rectangle(1091, 503, 180, 139);
             Walls.Add(newPlatform);
         }
 

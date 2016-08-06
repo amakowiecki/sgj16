@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +11,12 @@ using System.Threading.Tasks;
 
 namespace SGJ16
 {
-    public delegate void PowerUpEffect(Player player);
+    public delegate void PowerUpEffect(Player player, PowerUp powerUp);
     public class PowerUpModel
     {
         public Texture2D Texture;
         public PowerUpEffect Effect;
+        public SoundEffect Sound; 
     }
     public class PowerUp : IDisplayable
     {
@@ -33,6 +36,12 @@ namespace SGJ16
         public void Update()
         {
             return;
+        }
+
+        public void Take(Player player)
+        {
+            model.Effect.Invoke(player, this);
+            model.Sound.Play();
         }
     }
 
@@ -54,15 +63,19 @@ namespace SGJ16
             //heal
             PowerUpModel model = new PowerUpModel();
             model.Texture = content.Load<Texture2D>("heal");
+            model.Effect = HealEffect;
+            model.Sound = content.Load<SoundEffect>("pizzaeating");
             PowerUpModels.Add(model);
         }
 
         private static void findEmptySpace(PowerUp powerUp)
         {
-            bool positionOK = true;
-            while (true)
+            bool positionOK = false;
+            Rectangle positionRect;
+            while (!positionOK)
             {
-                Rectangle positionRect = new Rectangle(new Point(RNG.Next(0, Config.WINDOW_WIDTH), RNG.Next(0, Config.WINDOW_HEIGHT)), powerUp.rectangle.Size);
+                positionOK = true;
+                positionRect = new Rectangle(new Point(RNG.Next(0, Config.WINDOW_WIDTH), RNG.Next(0, Config.WINDOW_HEIGHT)), powerUp.rectangle.Size);
                 foreach (var wall in map.Walls)
                 {
                     if (wall.Intersects(positionRect))
@@ -71,12 +84,27 @@ namespace SGJ16
                         break;
                     }
                 }
+                if (positionOK)
+                {
+                    foreach (var pu in map.PowerUps)
+                    {
+                        if (pu.rectangle.Intersects(positionRect))
+                        {
+                            positionOK = false;
+                            break;
+                        }
+                    }
+                }
+                
                 if (!positionOK)
                 {
                     continue;
                 }
-                powerUp.rectangle = positionRect;
-                return;
+                else
+                {
+                    powerUp.rectangle = positionRect;
+                    return;
+                }               
             }
         }
 
@@ -95,6 +123,12 @@ namespace SGJ16
             map.PowerUps.Add(newPowerUp);
             nextPowerUpFrame = RNG.Next(PowerUpSpawnMin, PowerUpSpawnMax);
             frameCount = 0;
+        }
+
+        public static void HealEffect(Player player, PowerUp powerUp)
+        {
+            player.Heal(Config.BASIC_HEAL);
+            map.PowerUps.Remove(powerUp);
         }
     }
 }
