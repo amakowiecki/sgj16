@@ -12,14 +12,12 @@ namespace SGJ16
     {
         public List<Player> Players { get; set; }
         public List<Rectangle> Walls { get; set; }
-       // public List<Rectangle> Platforms { get; set; }  //tymczasowe
         public Texture2D MapTexture { get; set; }
 
         public Map()
         {
             Players = new List<Player>();
             Walls = new List<Rectangle>();
-            //Platforms = new List<Rectangle>();
 
             SetBoundingWalls();
         }
@@ -46,7 +44,6 @@ namespace SGJ16
             Walls.Add(newPlatform);
             newPlatform = new Rectangle(1091, 503, 189, 139);
             Walls.Add(newPlatform);
-            //Platforms.Add(newPlatform);
         }
 
         public void Update()
