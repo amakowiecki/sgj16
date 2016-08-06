@@ -73,3 +73,4 @@ D:\projekty\sgj16\SGJ16\bin\Windows\x86\Debug\SharpDX.XInput.xml
 D:\projekty\sgj16\SGJ16\bin\Windows\x86\Debug\SharpDX.RawInput.xml
 D:\projekty\sgj16\SGJ16\bin\Windows\x86\Debug\SharpDX.Direct3D9.xml
 D:\projekty\sgj16\SGJ16\bin\Windows\x86\Debug\Content\pocisk.xnb
+D:\projekty\sgj16\SGJ16\bin\Windows\x86\Debug\Content\idle.xnb

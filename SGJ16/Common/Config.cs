@@ -10,5 +10,6 @@ namespace SGJ16
     {
         public const int WINDOW_WIDTH = 1280;
         public const int WINDOW_HEIGHT = 640;
+
     }
 }

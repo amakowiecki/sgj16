@@ -39,12 +39,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Common\Config.cs" />
+    <Compile Include="Common\Enums.cs" />
     <Compile Include="Common\StaticMethods.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="IDisplayable.cs" />
     <Compile Include="Keyboard\GameKey.cs" />
     <Compile Include="Keyboard\KeyboardInput.cs" />
     <Compile Include="Keyboard\PlayerInput.cs" />
+    <Compile Include="Map.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

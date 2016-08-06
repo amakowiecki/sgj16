@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using SGJ16.Common;
 
 namespace SGJ16
 {
@@ -12,12 +13,14 @@ namespace SGJ16
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        public static Point DisplaySize { get { return new Point(1200, 850); } }
+        public static Point DisplaySize { get { return new Point(Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT); } }
 
         KeyboardInput keyboard;
 
         PlayerInput p1Input;
         PlayerInput p2Input;
+        Player player1;
+        Map Map;
 
         Texture2D sample;
 
@@ -66,6 +69,10 @@ namespace SGJ16
             p2Input.SetKey(GameKey.Pause, Keys.Space);
             p2Input.SetKey(GameKey.Quit, Keys.Escape);
 
+
+            player1 = new Player(false);
+            Map = new Map();
+            player1.Map = Map;
             base.Initialize();
         }
 
@@ -79,6 +86,8 @@ namespace SGJ16
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             sample = Content.Load<Texture2D>("pocisk");
+
+            player1.playerTexture = Content.Load<Texture2D>("idle");
 
             // TODO: use this.Content to load your game content here
         }
@@ -106,7 +115,23 @@ namespace SGJ16
 
             keyboard.Update();
 
-            // TODO: Add your update logic here
+            if (IsKeyPressed(p1Input, GameKey.MoveLeft))
+            {
+                player1.CurrentState = State.Walking;
+                player1.Move(Direction.Left);
+            }
+            else if (IsKeyPressed(p1Input, GameKey.MoveRight))
+            {
+                player1.CurrentState = State.Walking;
+                player1.Move(Direction.Right);
+            }
+            //else if czy skacze
+            else
+            {
+                player1.CurrentState = State.Standing;
+            }
+            player1.Update();
+
 
             base.Update(gameTime);
         }
@@ -132,7 +157,9 @@ namespace SGJ16
 
             spriteBatch.Begin();
 
-            spriteBatch.Draw(sample, DisplaySize.ToVector2() / 2 - new Vector2(sample.Width, sample.Height), Color.White * 0.5f);
+            //spriteBatch.Draw(sample, DisplaySize.ToVector2() / 2 - new Vector2(sample.Width, sample.Height), Color.White * 0.5f);
+
+            player1.Draw(spriteBatch);
 
             spriteBatch.End();
 
