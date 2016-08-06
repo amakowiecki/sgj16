@@ -25,11 +25,9 @@
 /processorParam:TextureFormat=Color
 /build:pocisk.png
 
-<<<<<<< HEAD
+
 #begin aim.png
-=======
 #begin idle.png
->>>>>>> 1474e6d71236ab1c6cf0bf46849412aaf9a2babd
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -39,9 +37,6 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-<<<<<<< HEAD
 /build:aim.png
-=======
 /build:idle.png
 
->>>>>>> 1474e6d71236ab1c6cf0bf46849412aaf9a2babd

@@ -48,11 +48,8 @@
     <Compile Include="Keyboard\GameKey.cs" />
     <Compile Include="Keyboard\KeyboardInput.cs" />
     <Compile Include="Keyboard\PlayerInput.cs" />
-<<<<<<< HEAD
     <Compile Include="Missile.cs" />
-=======
     <Compile Include="Map.cs" />
->>>>>>> 1474e6d71236ab1c6cf0bf46849412aaf9a2babd
     <Compile Include="Player.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
