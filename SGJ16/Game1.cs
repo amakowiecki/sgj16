@@ -77,6 +77,7 @@ namespace SGJ16
             IsMouseVisible = true;
 
             animationManager = new AnimationManager();
+            Missile.AnimationManager = animationManager;
             loadingAnimation = new LoadingAnimation(new Vector2((Config.WINDOW_WIDTH - LoadingAnimation.Width) / 2, -16));
             loadingProgressBar = new Rectangle(new Point((Config.WINDOW_WIDTH - LoadingAnimation.Width) / 2, Config.WINDOW_HEIGHT - 72), 
                 new Point(LoadingAnimation.Width, 48));
@@ -191,11 +192,11 @@ namespace SGJ16
             defaultFontXl = Content.Load<SpriteFont>("DefaultFontXL");
 
             loadingAnimation.Load(Content);
-
-            //animationManager.AddModel(AnimationType.Test, Content.Load<Texture2D>("testanim1"), 4);
+            
+            animationManager.AddModel(AnimationType.SmallExplosion, Content.Load<Texture2D>("explodesmall"), 8);
+            animationManager.AddModel(AnimationType.SmallSparkle, Content.Load<Texture2D>("sparkle"), 10);
             //animationManager.AddSimpleAnimation(AnimationType.Test, Vector2.Zero, 10);
-            //animationManager.AddRepeatableAnimation(AnimationType.Test, new Vector2(128, 128), 10, 5);
-            //animationManager.AddLoopAnimation(AnimationType.Test, new Vector2(256, 256), 10);
+            //animationManager.AddLoopAnimation(AnimationType.SmallSparkle, new Vector2(0, 0), 3);
 
             Map.missiles.Models[MissileModelType.Basic].Texture = Content.Load<Texture2D>("pocisk");
             Map.missiles.Models[MissileModelType.Strong].Texture = Content.Load<Texture2D>("superMissile");

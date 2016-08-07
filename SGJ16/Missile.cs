@@ -36,6 +36,8 @@ namespace SGJ16
         internal Vector2 initialPositon;
         internal Vector2 initialVelocity;
 
+        public static AnimationManager AnimationManager;
+
         /// <summary>
         /// Nie ruszać. Nie wywoływać.
         /// </summary>
@@ -93,6 +95,7 @@ namespace SGJ16
                     if (wall.Height > 0 && StaticMethods.CheckCollision(circle, wall))
                     {
                         this.Dispose();
+                        AnimationManager.AddSimpleAnimation(AnimationType.SmallExplosion, circle.Center - AnimationManager.Models[AnimationType.SmallExplosion].FrameSize.ToVector2() / 2, 3);
                         return;
                     }
                 }

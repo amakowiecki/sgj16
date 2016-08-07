@@ -88,7 +88,8 @@ namespace SGJ16
 
     public enum AnimationType
     {
-        Test
+        SmallExplosion,
+        SmallSparkle
     }
 
     public class AnimationManager
