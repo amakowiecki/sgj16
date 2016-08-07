@@ -590,8 +590,8 @@ namespace SGJ16
             player1.CurrentHp = Player.DefaultHP;
             player2.CurrentHp = Player.DefaultHP;
 
-            player1.SetInitialPosition(false);
-            player2.SetInitialPosition(true);
+            player1.SetInitialPosition(true);
+            player2.SetInitialPosition(false);
 
             player1.missileModelType = MissileModelType.Basic;
             player2.missileModelType = MissileModelType.Basic;
