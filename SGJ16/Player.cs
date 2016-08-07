@@ -114,6 +114,7 @@ namespace SGJ16
             PlayerHeight = DefaultPlayerHeight;
             PlayerWidth = DefaultPlayerWidth;
             setInitialPosition(isLeft);
+            missileModelType = MissileModelType.Basic;
 
             IsFalling = false;
             framesInAir = 0;
