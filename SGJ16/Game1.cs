@@ -218,15 +218,10 @@ namespace SGJ16
                 {
                     Exit();
                 }
-
-                foreach (var item in displayableItems)
+                if (IsKeyDown(player.Input, GameKey.Pause))
                 {
-                    item.Update();
-                    if (IsKeyDown(player.Input, GameKey.Pause))
-                    {
-                        pauseGame();
-                        break;
-                    }
+                    pauseGame();
+                    break;
                 }
             }
 
@@ -245,14 +240,6 @@ namespace SGJ16
                             missile.Update();
                         }
 
-                        foreach (var item in displayableItems)
-                        {
-                            item.Update();
-                        }
-
-                        UpdatePlayer(player1);
-                        UpdatePlayer(player2);
-
                         if (Map.PowerUps.Count > 0)
                         {
                             for (var i = Map.PowerUps.Count - 1; i >= 0; i--)
@@ -269,6 +256,13 @@ namespace SGJ16
                             }
                         }
 
+                        foreach (var item in displayableItems)
+                        {
+                            item.Update();
+                        }
+
+                        UpdatePlayer(player1);
+                        UpdatePlayer(player2);
                         PowerUpManager.Update(gameTime);
                     }
                 }
@@ -432,7 +426,7 @@ namespace SGJ16
             if (texture != null)
             {
                 float width = bar.VisibleHpPercentage * texture.Width;
-                spriteBatch.Draw(texture, bar.Position, new Rectangle(0, 0, (int)width, texture.Height), Color.White);
+                spriteBatch.Draw(texture, bar.Position, new Rectangle(0, 0, (int) width, texture.Height), Color.White);
                 spriteBatch.DrawOutlinedString(defaultFont, player.Name, bar.Position
                     + new Vector2(player.IsLeft ? 0 : texture.Width - defaultFont.MeasureString(player.Name).X,
                     16 + texture.Height), Color.White, 2.0f, Color.Black, 1.0f);
@@ -444,7 +438,7 @@ namespace SGJ16
             tintScreen(Color.Black * 0.85f);
             string text = "Koniec gry";
             float min = 0.3f;
-            float opacity = min + (float)pulseCounter / maxPulse * (1 - min);
+            float opacity = min + (float) pulseCounter / maxPulse * (1 - min);
             spriteBatch.DrawOutlinedString(defaultFontXl, text, new Vector2(
                 StaticMethods.CenterTextX(defaultFontXl, text), 256), Color.White, 2.0f, Color.Black, opacity);
             text = "Gracz \'" + winner.Name + "\' wins.";
@@ -460,7 +454,7 @@ namespace SGJ16
             tintScreen(Color.Black * 0.85f);
             string text = "Pauza";
             float min = 0.3f;
-            float opacity = min + (float)pulseCounter / maxPulse * (1 - min);
+            float opacity = min + (float) pulseCounter / maxPulse * (1 - min);
             spriteBatch.DrawOutlinedString(defaultFontXl, text, new Vector2(
                 StaticMethods.CenterTextX(defaultFontXl, text), 280), Color.White, 2.0f, Color.Black, opacity);
             text = "Press \'Spacja\' to continue.";
