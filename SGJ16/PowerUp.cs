@@ -61,11 +61,11 @@ namespace SGJ16
         public const int Heal = 25;
         public const int SpeedUpTime = 5 * 1000; //milisekundy
         public const int DmgUpTime = 5 * 1000;
-        public const int InvurnerabilityTime = 5 * 1000;
+        public const int InvurnerabilityTime = 3 * 1000;
 
         public const int PowerUpNumberLimit = 10;
         public const int PowerUpSpawnMin = 60; //w klatkach
-        public const int PowerUpSpawnMax = 600; //jw
+        public const int PowerUpSpawnMax = 300; //jw
         public static Random RNG = new Random();
         public static List<PowerUpModel> PowerUpModels = new List<PowerUpModel>();
         public static List<EffectArgs> AwaitingEffects = new List<EffectArgs>();
@@ -86,6 +86,10 @@ namespace SGJ16
 
             //dmgUp
             model = new PowerUpModel(content.Load<Texture2D>("gumy"), DmgUp, content.Load<SoundEffect>("dmgUp"));
+            PowerUpModels.Add(model);
+
+            //invulnerability
+            model = new PowerUpModel(content.Load<Texture2D>("star"), MakeInvulnerable, content.Load<SoundEffect>("Invulnerable"));
             PowerUpModels.Add(model);
 
         }
@@ -196,13 +200,13 @@ namespace SGJ16
             player.missileModelType = MissileModelType.Basic;
         }
 
-        public static void MakeInvurnerable(Player player)
+        public static void MakeInvulnerable(Player player)
         {
             player.IsInvurnelable = true;
-            AwaitingEffects.Add(new EffectArgs(MakeVurnerable, InvurnerabilityTime, player));
+            AwaitingEffects.Add(new EffectArgs(MakeVulnerable, InvurnerabilityTime, player));
         }
 
-        public static void MakeVurnerable(Player player)
+        public static void MakeVulnerable(Player player)
         {
             player.IsInvurnelable = false;
         }
