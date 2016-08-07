@@ -81,7 +81,7 @@ namespace SGJ16
             PowerUpModels.Add(model);
 
             //speedUp
-            model = new PowerUpModel(content.Load<Texture2D>("speed"), SpeedUp, content.Load<SoundEffect>("SpeedUp"));
+            model = new PowerUpModel(content.Load<Texture2D>("walkman"), SpeedUp, content.Load<SoundEffect>("SpeedUp"));
             PowerUpModels.Add(model);
 
             //dmgUp
