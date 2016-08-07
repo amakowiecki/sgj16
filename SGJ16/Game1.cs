@@ -560,13 +560,13 @@ namespace SGJ16
                     }
                     else
                     {
-                        pulseCounter = Config.PLAYER_FADING_SPEED;
+                        pulseCounter = pauseTintMaxValue;
                     }
                 }
                 else
                 {
                     gameState = GameState.Ended;
-                    pulseCounter = 0;
+                    pulseCounter = pauseTintMaxValue;
                 }
             }
             else
@@ -598,6 +598,7 @@ namespace SGJ16
                     missile.Dispose();
                 }
                 gameState = GameState.PreEnding;
+                pulseCounter = 0;
             }
             else
             {
@@ -657,6 +658,7 @@ namespace SGJ16
             loser = null;
 
             gameState = GameState.Normal;
+            pulseCounter = 0;
         }
     }
 }
