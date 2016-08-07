@@ -35,6 +35,8 @@ namespace SGJ16
         private static short IdleTexturesNumber = 2;
         private static short WalkingTexturesNumber = 3;
 
+        public string Name;
+        public bool IsLeft;
         public int PlayerHeight;
         public int PlayerWidth;
         public Map Map
@@ -100,6 +102,7 @@ namespace SGJ16
 
         public Player(bool isLeft)
         {
+            IsLeft = isLeft;
             currentFrameNumber = 0;
             CurrentDirection = isLeft ? Direction.Right : Direction.Left;
             currentTextureNumber = 0;

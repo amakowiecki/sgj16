@@ -169,3 +169,15 @@
 /processorParam:Quality=Best
 /build:muzykawalki.wav
 
+#begin DefaultFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:DefaultFont.spritefont
+
+#begin DefaultFontXL.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:DefaultFontXL.spritefont
+

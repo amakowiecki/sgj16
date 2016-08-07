@@ -61,5 +61,23 @@ namespace SGJ16
         {
             return new Vector2(texture.Width / 2, texture.Height / 2);
         }
+
+        public static float CenterTextX(SpriteFont font, string text)
+        {
+            return (Config.WINDOW_WIDTH - font.MeasureString(text).X) / 2;
+        }
+
+        public static void DrawOutlinedString(this SpriteBatch spriteBatch, SpriteFont font,
+            string text, Vector2 position, Color textColor, float outlineMargin, Color outlineColor, float alpha)
+        {
+            float x = position.X, y = position.Y;
+            textColor *= alpha;
+            outlineColor *= alpha / 2;
+            spriteBatch.DrawString(font, text, new Vector2(x - outlineMargin, y - outlineMargin), outlineColor);
+            spriteBatch.DrawString(font, text, new Vector2(x - outlineMargin, y + outlineMargin), outlineColor);
+            spriteBatch.DrawString(font, text, new Vector2(x + outlineMargin, y - outlineMargin), outlineColor);
+            spriteBatch.DrawString(font, text, new Vector2(x + outlineMargin, y + outlineMargin), outlineColor);
+            spriteBatch.DrawString(font, text, new Vector2(x, y), textColor);
+        }
     }
 }

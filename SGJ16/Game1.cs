@@ -7,6 +7,13 @@ using System.Linq;
 
 namespace SGJ16
 {
+    public enum GameState
+    {
+        Normal,
+        Paused,
+        Ended
+    }
+
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
@@ -19,6 +26,8 @@ namespace SGJ16
         public static Point DisplaySize { get { return new Point(Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT); } }
 
         KeyboardInput keyboard;
+        SpriteFont defaultFont;
+        SpriteFont defaultFontXl;
 
         List<IDisplayable> displayableItems;
         
@@ -29,6 +38,15 @@ namespace SGJ16
         HpBar p1HpBar;
         HpBar p2HpBar;
         public static Vector2 HpBarPosition = new Vector2(36, 36);
+
+        GameState gameState;
+
+        int pulseCounter = 0;
+        int maxPulse = 30;
+        bool increasePulse = false;
+
+        Player winner = null;
+        Player loser = null;
 
         Missiles missiles;
 
@@ -68,6 +86,7 @@ namespace SGJ16
         /// </summary>
         protected override void Initialize()
         {
+            gameState = GameState.Normal;
             Aim.Initialize(Config.MIN_AIM_ANGLE, Config.MAX_AIM_ANGLE, Config.AIM_STEP, Config.DISTANCE);
 
             HpBar.Ranges = new List<HpRange>
@@ -109,6 +128,8 @@ namespace SGJ16
             Player.DamageModifiers.Add(HitBox.Body, 1.00f);
             Player.DamageModifiers.Add(HitBox.Head, 4.17f);
 
+            player1.Name = "Player 1";
+            player2.Name = "Gracz 2";
             player1.Map = Map;
             player2.Map = Map;
             displayableItems = new List<IDisplayable>();
@@ -129,6 +150,9 @@ namespace SGJ16
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            defaultFont = Content.Load<SpriteFont>("DefaultFont");
+            defaultFontXl = Content.Load<SpriteFont>("DefaultFontXL");
 
             missiles.Models[MissileModelType.Basic].Texture = Content.Load<Texture2D>("pocisk");
 
@@ -178,39 +202,109 @@ namespace SGJ16
         {
             keyboard.Update();
 
-            foreach (Missile missile in missiles)
+            foreach (Player player in Map.Players)
             {
-                missile.Update();
-            }
-
-            foreach (var item in displayableItems)
-            {
-                item.Update();
-            }
-
-            UpdatePlayer(player1);
-            UpdatePlayer(player2);
-
-            if (Map.PowerUps.Count > 0)
-            {
-                for (var i = Map.PowerUps.Count-1; i >= 0; i--)
+                if (IsKeyPressed(player.Input, GameKey.Quit))
                 {
-                    var powerUp = Map.PowerUps[i];
-                    if (powerUp.rectangle.Intersects(player1.rect))
-                    {
-                        powerUp.Take(player1);
-                    }
-                    else if (powerUp.rectangle.Intersects(player2.rect))
-                    {
-                        powerUp.Take(player2);
-                    }
+                    Exit();
+                }
+
+                if (IsKeyDown(player.Input, GameKey.Pause))
+                {
+                    pauseGame();
+                    break;
                 }
             }
 
+            if (gameState != GameState.Ended)
+            {
+                if (gameState != GameState.Paused)
+                {
+                    if (checkWinLoseConditions())
+                    {
+                        gameState = GameState.Ended;
+                    }
+                    else
+                    {
+                        foreach (Missile missile in missiles)
+                        {
+                            missile.Update();
+                        }
 
-            PowerUpManager.SpawnPowerUps();
+                        foreach (var item in displayableItems)
+                        {
+                            item.Update();
+                        }
+
+                        UpdatePlayer(player1);
+                        UpdatePlayer(player2);
+
+                        if (Map.PowerUps.Count > 0)
+                        {
+                            for (var i = Map.PowerUps.Count - 1; i >= 0; i--)
+                            {
+                                var powerUp = Map.PowerUps[i];
+                                if (powerUp.rectangle.Intersects(player1.rect))
+                                {
+                                    powerUp.Take(player1);
+                                }
+                                else if (powerUp.rectangle.Intersects(player2.rect))
+                                {
+                                    powerUp.Take(player2);
+                                }
+                            }
+                        }
+                        PowerUpManager.SpawnPowerUps();
+                    }
+                }
+                else
+                {
+                    updatePulseCounter();
+                }
+            }
+            else
+            {
+                updatePulseCounter();
+            }
 
             base.Update(gameTime);
+        }
+
+        private void updatePulseCounter()
+        {
+            if (increasePulse)
+            {
+                ++pulseCounter;
+                if (pulseCounter >= maxPulse)
+                {
+                    increasePulse = false;
+                }
+            }
+            else
+            {
+                --pulseCounter;
+                if (pulseCounter < 0)
+                {
+                    increasePulse = true;
+                }
+            }
+        }
+
+        private bool checkWinLoseConditions()
+        {
+            if (player1.CurrentHp <= 0)
+            {
+                winner = player2;
+                loser = player1;
+                return true;
+            }
+            if (player2.CurrentHp <= 0)
+            {
+                winner = player1;
+                loser = player2;
+                return true;
+            }
+            return false;
         }
 
         /// <summary>
@@ -236,17 +330,43 @@ namespace SGJ16
                 missile.Draw(spriteBatch);
             }
 
-            Aim aim = player1.Aim;
-            spriteBatch.Draw(aim.Texture, aim.Position - aim.Texture.GetHalfSize(), Color.White);
-            aim = player2.Aim;
-            spriteBatch.Draw(aim.Texture, aim.Position - aim.Texture.GetHalfSize(), Color.White);
+            //Aim aim = player1.Aim;
+            //spriteBatch.Draw(aim.Texture, aim.Position - aim.Texture.GetHalfSize(), Color.White);
+            //aim = player2.Aim;
+            //spriteBatch.Draw(aim.Texture, aim.Position - aim.Texture.GetHalfSize(), Color.White);
 
-            DrawHpBar(p1HpBar);
-            DrawHpBar(p2HpBar);
+            foreach (Player p in Map.Players)
+            {
+                DrawHpBar(p);
+            }
+
+            if (gameState == GameState.Ended)
+            {
+                drawEndScreen();
+            }
+            else if (gameState == GameState.Paused)
+            {
+                drawPauseScreen();
+            }
 
             spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        private void tintScreen(Color color)
+        {
+            Texture2D tintTexture = new Texture2D(GraphicsDevice, 1, 1);
+            tintTexture.SetData(new Color[] { Color.White });
+            spriteBatch.Draw(tintTexture, new Rectangle(0, 0, Config.WINDOW_WIDTH, Config.WINDOW_HEIGHT), color);
+        }
+
+        private void pauseGame()
+        {
+            gameState = gameState == GameState.Paused
+                ? GameState.Normal : GameState.Paused;
+            pulseCounter = 0;
+            increasePulse = true;
         }
 
         private bool IsKeyPressed(PlayerInput playerInput, GameKey key)
@@ -269,7 +389,7 @@ namespace SGJ16
             missiles.InitializeMissile(MissileModelType.Basic, aim.Player.AbsoluteMissileOrigin,
                 Config.MISSILE_FORCE * aim.GetMissileVelocity());
         }
-
+        
         private void UpdateAim(Aim aim, PlayerInput playerInput)
         {
             bool upPressed = IsKeyPressed(playerInput, GameKey.LookUp);
@@ -288,26 +408,54 @@ namespace SGJ16
             }
         }
 
-        private void DrawHpBar(HpBar bar)
+        private void DrawHpBar(Player player)
         {
+            HpBar bar = player.HpBar;
             spriteBatch.Draw(HpBar.BackTexture, bar.Position, Color.White);
             Texture2D texture = bar.Texture;
             if (texture != null)
             {
                 float width = bar.VisibleHpPercentage * texture.Width;
                 spriteBatch.Draw(texture, bar.Position, new Rectangle(0, 0, (int) width, texture.Height), Color.White);
+                spriteBatch.DrawOutlinedString(defaultFont, player.Name, bar.Position
+                    + new Vector2(player.IsLeft ? 0 : texture.Width - defaultFont.MeasureString(player.Name).X, 
+                    16 + texture.Height), Color.White, 2.0f, Color.Black, 1.0f);
             }
+        }
+
+        private void drawEndScreen()
+        {
+            tintScreen(Color.Black * 0.85f);
+            string text = "Koniec gry";
+            float min = 0.3f;
+            float opacity = min + (float)pulseCounter / maxPulse * (1 - min);
+            spriteBatch.DrawOutlinedString(defaultFontXl, text, new Vector2(
+                StaticMethods.CenterTextX(defaultFontXl, text), 256), Color.White, 2.0f, Color.Black, opacity);
+            text = "Gracz \'" + winner.Name + "\' wins.";
+            spriteBatch.DrawOutlinedString(defaultFont, text, new Vector2(
+                StaticMethods.CenterTextX(defaultFont, text), 360), Color.White, 2.0f, Color.Black, opacity);
+            text = "Wciśnij \'Space\', aby continue.";
+            spriteBatch.DrawOutlinedString(defaultFont, text, new Vector2(
+                StaticMethods.CenterTextX(defaultFont, text), 400), Color.White, 2.0f, Color.Black, opacity);
+        }
+
+        private void drawPauseScreen()
+        {
+            tintScreen(Color.Black * 0.85f);
+            string text = "Pauza";
+            float min = 0.3f;
+            float opacity = min + (float)pulseCounter / maxPulse * (1 - min);
+            spriteBatch.DrawOutlinedString(defaultFontXl, text, new Vector2(
+                StaticMethods.CenterTextX(defaultFontXl, text), 280), Color.White, 2.0f, Color.Black, opacity);
+            text = "Press \'Spacja\' to continue.";
+            spriteBatch.DrawOutlinedString(defaultFont, text, new Vector2(
+                StaticMethods.CenterTextX(defaultFont, text), 390), Color.White, 2.0f, Color.Black, opacity);
         }
 
         private void UpdatePlayer(Player player)
         {
             PlayerInput pInput = player.Input;
             UpdateAim(player.Aim, pInput);
-
-            if (IsKeyPressed(pInput, GameKey.Quit))
-            {
-                Exit();
-            }
 
             if (IsKeyPressed(pInput, GameKey.MoveLeft))
             {
