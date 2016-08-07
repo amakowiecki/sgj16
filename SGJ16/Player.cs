@@ -116,8 +116,8 @@ namespace SGJ16
             CurrentJumpSpeed = DefaultJumpSpeed;
             PlayerHeight = DefaultPlayerHeight;
             PlayerWidth = DefaultPlayerWidth;
-            setInitialPosition(isLeft);
-            missileModelType = MissileModelType.Cone;
+            SetInitialPosition(isLeft);
+            missileModelType = MissileModelType.Basic;
 
             IsFalling = false;
             framesInAir = 0;
@@ -505,7 +505,7 @@ namespace SGJ16
             }
         }
 
-        private void setInitialPosition(bool isLeft)
+        public void SetInitialPosition(bool isLeft)
         {
             CurrentPosition = new Vector2(
                 isLeft ? (float)Config.PLAYER_POSITION_X : Config.WINDOW_WIDTH - PlayerWidth - Config.PLAYER_POSITION_X,

@@ -587,7 +587,19 @@ namespace SGJ16
 
         private void restartGame()
         {
+            player1.CurrentHp = Player.DefaultHP;
+            player2.CurrentHp = Player.DefaultHP;
 
+            player1.SetInitialPosition(false);
+            player2.SetInitialPosition(true);
+
+            player1.missileModelType = MissileModelType.Basic;
+            player2.missileModelType = MissileModelType.Basic;
+
+            player1.CurrentSpeed = Player.DefaultSpeed;
+            player2.CurrentSpeed = Player.DefaultSpeed;
+
+            gameState = GameState.Normal;
         }
     }
 }

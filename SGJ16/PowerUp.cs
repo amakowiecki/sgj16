@@ -185,6 +185,12 @@ namespace SGJ16
             AwaitingEffects.Add(new EffectArgs(DmgRegular, DmgUpTime, player));
         }
 
+        public static void DmgCone(Player player)
+        {
+            player.missileModelType = MissileModelType.Cone;
+            AwaitingEffects.Add(new EffectArgs(DmgRegular, DmgUpTime, player));
+        }
+
         public static void DmgRegular(Player player)
         {
             player.missileModelType = MissileModelType.Basic;
