@@ -69,6 +69,7 @@ namespace SGJ16
 
         public static Dictionary<HitBox, float> DamageModifiers;
 
+        public MissileModelType missileModelType;
         public Gun Gun;
         public HpBar HpBar;
         public Aim Aim;

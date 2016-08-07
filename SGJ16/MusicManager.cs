@@ -19,17 +19,27 @@ namespace SGJ16
         public static void Load(ContentManager content)
         {
             songs = new List<Song>();
-            var newSong = content.Load<Song>("muzykawalki");
+            //var newSong = content.Load<Song>("muzykawalki");
+            var newSong = content.Load<Song>("sabrepulse/1");
+            songs.Add(newSong);
+            newSong = content.Load<Song>("sabrepulse/2");
+            songs.Add(newSong);
+            newSong = content.Load<Song>("sabrepulse/3");
+            songs.Add(newSong);
+            newSong = content.Load<Song>("sabrepulse/4");
+            songs.Add(newSong);
+            newSong = content.Load<Song>("sabrepulse/5");
             songs.Add(newSong);
         }
 
         public static void Play()
         {
+            MediaPlayer.Volume = 0.3f;
             currentSongIdx = 0;
             playNext();
         }
 
-        public static void Update(GameTime gametime) //na razie nie wywoływane bo jeden utwór
+        public static void Update(GameTime gametime) 
         {
             timePlaying += (int) gametime.ElapsedGameTime.TotalSeconds;
 
@@ -45,7 +55,7 @@ namespace SGJ16
             currentSongDuration = (int)songs[currentSongIdx].Duration.TotalSeconds;
             MediaPlayer.Play(songs[currentSongIdx]);
            
-            MediaPlayer.IsRepeating = true; //bo jedna
+           // MediaPlayer.IsRepeating = true; 
             currentSongIdx++;
             if (currentSongIdx >= songs.Count)
             {

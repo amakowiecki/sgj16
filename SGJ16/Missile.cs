@@ -21,7 +21,9 @@ namespace SGJ16
     public enum MissileModelType
     {
         Empty,
-        Basic
+        Basic,
+        Strong,
+        //Cone
     }
 
     public class Missile : IDisplayable

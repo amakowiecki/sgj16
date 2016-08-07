@@ -14,6 +14,7 @@ namespace SGJ16
         public List<Rectangle> Walls { get; set; }
         public Texture2D MapTexture { get; set; }
         public List<PowerUp> PowerUps { get; set; }
+        public Missiles missiles;
 
         public Map()
         {
