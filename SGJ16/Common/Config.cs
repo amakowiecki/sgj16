@@ -21,6 +21,7 @@ namespace SGJ16
         public const float DISTANCE = 150;
 
         public const float MISSILE_FORCE = 1.5f;
+        public const int DEFAULT_MISSILE_DMG = 10;
 
         public const int PLAYER_HEIGHT = 113;
         public const int PLAYER_WIDTH = 65;

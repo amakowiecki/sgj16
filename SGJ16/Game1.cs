@@ -103,7 +103,7 @@ namespace SGJ16
                     Speed = 11.0f,
                     Radius = 4,
                     InitialDistance = 50,
-                    Damage = 10
+                    Damage = Config.DEFAULT_MISSILE_DMG
                 });
             Map.missiles.Models.Add(MissileModelType.Strong,
                 new MissileModel
@@ -112,7 +112,16 @@ namespace SGJ16
                     Speed = 8.0f,
                     Radius = 6,
                     InitialDistance = 50,
-                    Damage = 20
+                    Damage = 2 * Config.DEFAULT_MISSILE_DMG
+                });
+            Map.missiles.Models.Add(MissileModelType.Cone,
+                new MissileModel
+                {
+                    MaxDistance = 640,
+                    Speed = 11.0f,
+                    Radius = 4,
+                    InitialDistance = 50,
+                    Damage = Config.DEFAULT_MISSILE_DMG / 2
                 });
 
             player2.Input.SetKey(GameKey.MoveLeft, Keys.Left);
@@ -165,6 +174,8 @@ namespace SGJ16
 
             Map.missiles.Models[MissileModelType.Basic].Texture = Content.Load<Texture2D>("pocisk");
             Map.missiles.Models[MissileModelType.Strong].Texture = Content.Load<Texture2D>("superMissile");
+            Map.missiles.Models[MissileModelType.Cone].Texture = Content.Load<Texture2D>("pocisk");
+
 
             HpBar.Textures[HpRangeType.Normal] = Content.Load<Texture2D>("hpbargreen");
             HpBar.Textures[HpRangeType.Low] = Content.Load<Texture2D>("hpbaryellow");
@@ -394,10 +405,38 @@ namespace SGJ16
             return keyboard.IsKeyDown(playerInput.GetKey(key));
         }
 
+        private Vector2 RotatePoint(Vector2 point, Vector2 origin, float angle)
+        {
+            point -= origin;
+            float c = (float) Math.Cos(angle);
+            float s = (float) Math.Sin(angle);
+            float xnew = point.X * c - point.Y * s;
+            float ynew = point.X * s + point.Y * c;
+            return new Vector2(xnew + origin.X, ynew + origin.Y);
+        }
+
         private void CreateMissile(Player player)
         {
-            Map.missiles.InitializeMissile(player.missileModelType, player.AbsoluteMissileOrigin,
-                Config.MISSILE_FORCE * player.Aim.GetMissileVelocity());
+            if (player.missileModelType == MissileModelType.Cone)
+            {
+                Vector2 center = player.AbsoluteMissileOrigin;
+                Vector2 middle = Config.MISSILE_FORCE * player.Aim.GetMissileVelocity();
+                float angle = MathHelper.Pi / 18;
+                Map.missiles.InitializeMissile(player.missileModelType, center, middle);
+                for (int i = 1; i < 3; i++)
+                {
+                    float tempAng = i * angle;
+                    Vector2 velocity = RotatePoint(center + middle, center, tempAng) - center;
+                    Map.missiles.InitializeMissile(player.missileModelType, center, velocity);
+                    velocity = RotatePoint(center + middle, center, -tempAng) - center;
+                    Map.missiles.InitializeMissile(player.missileModelType, center, velocity);
+                }
+            }
+            else
+            {
+                Map.missiles.InitializeMissile(player.missileModelType, player.AbsoluteMissileOrigin,
+                    Config.MISSILE_FORCE * player.Aim.GetMissileVelocity());
+            }
         }
 
         private void UpdateAim(Player player)

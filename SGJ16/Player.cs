@@ -37,6 +37,7 @@ namespace SGJ16
 
         public string Name;
         public bool IsLeft;
+        public bool IsInvurnelable;
         public int PlayerHeight;
         public int PlayerWidth;
         public Map Map
@@ -56,6 +57,7 @@ namespace SGJ16
         public Texture2D playerTexture;
         public State CurrentState;
         public bool IsFalling;
+
         public float MaxHp;
         public float CurrentHp;
         public int CurrentSpeed;
@@ -104,6 +106,7 @@ namespace SGJ16
         public Player(bool isLeft)
         {
             IsLeft = isLeft;
+            IsInvurnelable = false;
             currentFrameNumber = 0;
             CurrentDirection = isLeft ? Direction.Right : Direction.Left;
             currentTextureNumber = 0;
@@ -114,7 +117,7 @@ namespace SGJ16
             PlayerHeight = DefaultPlayerHeight;
             PlayerWidth = DefaultPlayerWidth;
             setInitialPosition(isLeft);
-            missileModelType = MissileModelType.Basic;
+            missileModelType = MissileModelType.Cone;
 
             IsFalling = false;
             framesInAir = 0;
@@ -237,6 +240,11 @@ namespace SGJ16
         /// </summary>
         public bool CheckDamage(float basicDamage, Circle circle, out float result)
         {
+            if (IsInvurnelable)
+            {
+                result = 0;
+                return false;
+            }
             foreach (var boxInfo in BoundingBoxes)
             {
                 if (StaticMethods.CheckCollision(circle, boxInfo.Value))

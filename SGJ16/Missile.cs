@@ -23,7 +23,7 @@ namespace SGJ16
         Empty,
         Basic,
         Strong,
-        //Cone
+        Cone
     }
 
     public class Missile : IDisplayable

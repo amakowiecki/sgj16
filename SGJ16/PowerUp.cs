@@ -61,6 +61,7 @@ namespace SGJ16
         public const int Heal = 25;
         public const int SpeedUpTime = 5 * 1000; //milisekundy
         public const int DmgUpTime = 5 * 1000;
+        public const int InvurnerabilityTime = 5 * 1000;
 
         public const int PowerUpNumberLimit = 10;
         public const int PowerUpSpawnMin = 60; //w klatkach
@@ -187,6 +188,17 @@ namespace SGJ16
         public static void DmgRegular(Player player)
         {
             player.missileModelType = MissileModelType.Basic;
+        }
+
+        public static void MakeInvurnerable(Player player)
+        {
+            player.IsInvurnelable = true;
+            AwaitingEffects.Add(new EffectArgs(MakeVurnerable, InvurnerabilityTime, player));
+        }
+
+        public static void MakeVurnerable(Player player)
+        {
+            player.IsInvurnelable = false;
         }
 
     }
