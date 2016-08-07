@@ -27,7 +27,7 @@ namespace SGJ16
         public const int PLAYER_WIDTH = 65;
 
         public const float HP_BAR_PERC_STEP = 1.15f;
-
+        public const float PLAYER_FADING_SPEED = 0.01f;
 
     }
 }

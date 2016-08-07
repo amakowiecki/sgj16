@@ -42,9 +42,10 @@ namespace SGJ16
 
         GameState gameState;
 
-        int pulseCounter = 0;
+        float pulseCounter = 0;
         int maxPulse = 30;
         bool increasePulse = false;
+        float pauseTintMaxValue = 0.85f;
 
         Player winner = null;
         Player loser = null;
@@ -322,13 +323,25 @@ namespace SGJ16
                 DrawHpBar(p);
             }
 
-            if (gameState == GameState.Ended)
+            switch (gameState)
             {
-                drawEndScreen();
-            }
-            else if (gameState == GameState.Paused)
-            {
-                drawPauseScreen();
+                case GameState.Paused:
+                    {
+                        drawPauseScreen();
+                        break;
+                    }
+                case GameState.Ended:
+                    {
+                        drawEndScreen();
+                        break;
+                    }
+                case GameState.PreEnding:
+                    {
+                        drawPreEndScreen();
+                        break;
+                    }
+                default:
+                    break;
             }
 
             spriteBatch.End();
@@ -433,9 +446,14 @@ namespace SGJ16
             }
         }
 
+        private void drawPreEndScreen()
+        {
+            tintScreen(Color.Black * pauseTintMaxValue * pulseCounter);
+        }
+
         private void drawEndScreen()
         {
-            tintScreen(Color.Black * 0.85f);
+            tintScreen(Color.Black * pauseTintMaxValue);
             string text = "Koniec gry";
             float min = 0.3f;
             float opacity = min + (float) pulseCounter / maxPulse * (1 - min);
@@ -451,7 +469,7 @@ namespace SGJ16
 
         private void drawPauseScreen()
         {
-            tintScreen(Color.Black * 0.85f);
+            tintScreen(Color.Black * pauseTintMaxValue);
             string text = "Pauza";
             float min = 0.3f;
             float opacity = min + (float) pulseCounter / maxPulse * (1 - min);
@@ -530,6 +548,32 @@ namespace SGJ16
                     Exit();
                 }
             }
+
+            if (loser.HpBar.VisibleHpPercentage <= 0)
+            {
+                if (loser.Opacity > 0)
+                {
+                    loser.Opacity -= Config.PLAYER_FADING_SPEED;
+                    if (pulseCounter <= pauseTintMaxValue)
+                    {
+                        pulseCounter += Config.PLAYER_FADING_SPEED;
+                    }
+                    else
+                    {
+                        pulseCounter = Config.PLAYER_FADING_SPEED;
+                    }
+                }
+                else
+                {
+                    gameState = GameState.Ended;
+                    pulseCounter = 0;
+                }
+            }
+            else
+            {
+                loser.HpBar.Update();
+                loser.Opacity = 1.0f;
+            }
         }
 
         private void updateNormalState(GameTime gameTime)
@@ -549,7 +593,11 @@ namespace SGJ16
 
             if (checkWinLoseConditions())
             {
-                gameState = GameState.Ended;
+                foreach (Missile missile in Map.missiles)
+                {
+                    missile.Dispose();
+                }
+                gameState = GameState.PreEnding;
             }
             else
             {

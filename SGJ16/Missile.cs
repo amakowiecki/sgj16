@@ -90,7 +90,7 @@ namespace SGJ16
                 Circle circle = this.ToCircle();
                 foreach (Rectangle wall in map.Walls)
                 {
-                    if (StaticMethods.CheckCollision(circle, wall))
+                    if (wall.Height > 0 && StaticMethods.CheckCollision(circle, wall))
                     {
                         this.Dispose();
                         return;

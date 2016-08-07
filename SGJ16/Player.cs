@@ -55,6 +55,7 @@ namespace SGJ16
         public Vector2 CurrentPosition;
         public Dictionary<HitBox, Rectangle> BoundingBoxes;
         public Texture2D playerTexture;
+        public float Opacity = 1.0f;
         public State CurrentState;
         public bool IsFalling;
 
@@ -144,14 +145,14 @@ namespace SGJ16
         {
             if (CurrentDirection == Direction.Left)
             {
-                batch.Draw(playerTexture, CurrentPosition, getCurrentTextureBox(), Color.White, 0, Vector2.Zero, 1.0f, SpriteEffects.FlipHorizontally, 1.0f);
+                batch.Draw(playerTexture, CurrentPosition, getCurrentTextureBox(), Color.White * Opacity, 0, Vector2.Zero, 1.0f, SpriteEffects.FlipHorizontally, 1.0f);
             }
             else
             {
-                batch.Draw(playerTexture, CurrentPosition, getCurrentTextureBox(), Color.White);
+                batch.Draw(playerTexture, CurrentPosition, getCurrentTextureBox(), Color.White * Opacity);
             }
 
-            Gun.Draw(batch);
+            Gun.Draw(batch, Opacity);
         }
         
         public void Update()

@@ -20,19 +20,19 @@ namespace SGJ16
             Player = player;
         }
 
-        public void Draw(SpriteBatch batch)
+        public void Draw(SpriteBatch batch, float opacity)
         {
             Aim aim = Player.Aim;
             if (Player.CurrentDirection == Direction.Right)
             {
-                batch.Draw(Texture, Player.CurrentPosition + Position + Origin, null, Color.White,
+                batch.Draw(Texture, Player.CurrentPosition + Position + Origin, null, Color.White * opacity,
                     aim.Angle, Origin, 1.0f, SpriteEffects.None, 1.0f);
             }
             else
             {
                 batch.Draw(Texture, Player.CurrentPosition +
                     new Vector2(Player.PlayerWidth - Position.X - Origin.X, Position.Y + Origin.Y),
-                    null, Color.White, -aim.Angle, new Vector2(Texture.Width - Origin.X, Origin.Y),
+                    null, Color.White * opacity, -aim.Angle, new Vector2(Texture.Width - Origin.X, Origin.Y),
                     1.0f, SpriteEffects.FlipHorizontally, 1.0f);
             }
         }
