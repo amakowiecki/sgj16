@@ -54,6 +54,7 @@ namespace SGJ16
 
         AnimationManager animationManager;
 
+        string title;
         LoadingAnimation loadingAnimation;
         Rectangle loadingProgressBar;
         double loadingProgress = 0;
@@ -101,7 +102,11 @@ namespace SGJ16
         protected override void Initialize()
         {
             //gameState = GameState.Normal;
-            gameState = GameState.Loading;
+            //gameState = GameState.Loading;
+            gameState = GameState.Start;
+
+            title = "Wojownicze Żółwie Rambo";
+
             Aim.Initialize(Config.MIN_AIM_ANGLE, Config.MAX_AIM_ANGLE, Config.AIM_STEP, Config.DISTANCE);
 
             HpBar.Ranges = new List<HpRange>
@@ -328,6 +333,10 @@ namespace SGJ16
             {
                 drawLoadingScreen();
             }
+            else if (gameState == GameState.Start)
+            {
+                drawMenu();
+            }
             else
             {
                 //GraphicsDevice.Clear(new Color(96, 96, 96));
@@ -517,6 +526,20 @@ namespace SGJ16
             spriteBatch.DrawString(defaultFont, "Loading",
                 new Vector2(StaticMethods.CenterTextX(defaultFont, "Loading"), 532),
                 Color.Black * opacity);
+        }
+
+        private void drawMenu()
+        {
+            GraphicsDevice.Clear(Color.DarkCyan);
+            spriteBatch.DrawOutlinedString(defaultFontXl, "Wojownicze",
+                new Vector2(StaticMethods.CenterTextX(defaultFontXl, "Wojownicze"), 216), Color.White, 2.0f,
+                Color.Black, 1.0f);
+            spriteBatch.DrawOutlinedString(defaultFontXl, "Żółwie Rambo",
+                new Vector2(StaticMethods.CenterTextX(defaultFontXl, "Żółwie Rambo"), 300), Color.White, 2.0f,
+                Color.Black, 1.0f);
+            string text = "Wciśnij \'Spacja\', aby rozpocząć.";
+            spriteBatch.DrawOutlinedString(defaultFont, text, new Vector2(
+                StaticMethods.CenterTextX(defaultFont, text), 424), Color.White, 2.0f, Color.Black, 1.0f);
         }
 
         private void drawPauseScreen()
