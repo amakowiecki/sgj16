@@ -207,7 +207,7 @@ namespace SGJ16
                 - HpBar.BackTexture.Width, HpBarPosition.Y);
 
             player1.playerTexture = Content.Load<Texture2D>("idle");
-            player2.playerTexture = Content.Load<Texture2D>("player2");
+            player2.playerTexture = Content.Load<Texture2D>("player2-2");
             var gunTexture = Content.Load<Texture2D>("weapon");
             player1.Gun.Texture = gunTexture;
             player2.Gun.Texture = gunTexture;
