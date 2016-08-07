@@ -29,10 +29,14 @@ namespace SGJ16
     {
         PowerUpModel model;
         public Rectangle rectangle;
-        public PowerUp(PowerUpModel model)
+        public Animation animation;
+        public static AnimationManager animationManager;
+
+        public PowerUp(PowerUpModel model, Animation animation)
         {
             this.model = model;
             this.rectangle = new Rectangle(0, 0, model.Texture.Width, model.Texture.Height);
+            this.animation = animation;
         }
 
         public void Draw(SpriteBatch batch)
@@ -50,6 +54,7 @@ namespace SGJ16
             model.Effect.Invoke(player);
             model.Sound.Play();
             map.PowerUps.Remove(this);
+            animationManager.Animations.Remove(animation);
         }
     }
 
@@ -70,6 +75,7 @@ namespace SGJ16
         public static List<PowerUpModel> PowerUpModels = new List<PowerUpModel>();
         public static List<EffectArgs> AwaitingEffects = new List<EffectArgs>();
         public static Map map;
+        public static AnimationManager animationManager;
 
         private static int frameCount = 0;
         private static int nextPowerUpFrame = PowerUpSpawnMin;
@@ -161,13 +167,18 @@ namespace SGJ16
             }
             if (map.PowerUps.Count >= PowerUpNumberLimit)
             {
-                map.PowerUps.RemoveAt(0);
+                var toRemove = map.PowerUps[0];
+                animationManager.Animations.Remove(toRemove.animation);
+                map.PowerUps.Remove(toRemove);
             }
 
             var newPowerUpModel = PowerUpModels[RNG.Next(PowerUpModels.Count)];
-            var newPowerUp = new PowerUp(newPowerUpModel);
+            Animation anim = new Animation(animationManager.Models[AnimationType.SmallSparkle], 3, true, Vector2.Zero);
+            var newPowerUp = new PowerUp(newPowerUpModel, anim);
             findEmptySpace(newPowerUp);
             map.PowerUps.Add(newPowerUp);
+            anim.Position = newPowerUp.rectangle.Center.ToVector2() - animationManager.Models[AnimationType.SmallSparkle].FrameSize.ToVector2() / 2;
+            animationManager.Animations.Add(anim);
             nextPowerUpFrame = RNG.Next(PowerUpSpawnMin, PowerUpSpawnMax);
             frameCount = 0;
         }

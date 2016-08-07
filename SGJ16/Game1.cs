@@ -107,7 +107,8 @@ namespace SGJ16
             title = "Wojownicze Żółwie Rambo";
 
             Aim.Initialize(Config.MIN_AIM_ANGLE, Config.MAX_AIM_ANGLE, Config.AIM_STEP, Config.DISTANCE);
-
+            PowerUpManager.animationManager = animationManager;
+            PowerUp.animationManager = animationManager;
             HpBar.Ranges = new List<HpRange>
             {
                 new HpRange { UpperBound = 1.0f, Type = HpRangeType.Normal },
@@ -357,13 +358,13 @@ namespace SGJ16
                 {
                     missile.Draw(spriteBatch);
                 }
-
+                animationManager.Draw(spriteBatch);
                 foreach (Player p in Map.Players)
                 {
                     DrawHpBar(p);
                 }
 
-                animationManager.Draw(spriteBatch);
+                
 
                 switch (gameState)
                 {
@@ -613,6 +614,7 @@ namespace SGJ16
                 if (IsKeyDown(player.Input, GameKey.Pause))
                 {
                     gameState = GameState.Normal;
+                    MusicManager.Play();
                     break;
                 }
             }
@@ -692,7 +694,6 @@ namespace SGJ16
             if (loadingProgress >= loadingProgressBar.Width)
             {
                 gameState = GameState.Start;
-                MusicManager.Play();
             }
             updatePulseCounter();
         }
@@ -777,6 +778,7 @@ namespace SGJ16
             player2.Aim.Angle = 0;
 
             Map.PowerUps.Clear();
+            animationManager.Animations.Clear();
 
             winner = null;
             loser = null;
