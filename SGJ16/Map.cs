@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SGJ16
 {
-    public class Map :IDisplayable
+    public class Map : IDisplayable
     {
         public List<Player> Players { get; set; }
         public List<Rectangle> Walls { get; set; }

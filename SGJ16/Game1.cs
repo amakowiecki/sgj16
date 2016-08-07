@@ -223,7 +223,7 @@ namespace SGJ16
                         }
                         else
                         {
-                            foreach (Missile missile in missiles)
+                            foreach (Missile missile in Map.missiles)
                             {
                                 missile.Update();
                             }
