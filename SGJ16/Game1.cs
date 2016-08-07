@@ -101,9 +101,7 @@ namespace SGJ16
         /// </summary>
         protected override void Initialize()
         {
-            //gameState = GameState.Normal;
-            //gameState = GameState.Loading;
-            gameState = GameState.Start;
+            gameState = GameState.Loading;
 
             title = "Wojownicze Żółwie Rambo";
 
@@ -274,6 +272,11 @@ namespace SGJ16
                 case GameState.Loading:
                     {
                         updateLoadingState();
+                        break;
+                    }
+                case GameState.Start:
+                    {
+                        updateMenu();
                         break;
                     }
                 default:
@@ -597,6 +600,23 @@ namespace SGJ16
             updatePulseCounter();
         }
 
+        private void updateMenu()
+        {
+            foreach (Player player in Map.Players)
+            {
+                if (IsKeyPressed(player.Input, GameKey.Quit))
+                {
+                    Exit();
+                }
+                if (IsKeyDown(player.Input, GameKey.Pause))
+                {
+                    gameState = GameState.Normal;
+                    break;
+                }
+            }
+            updatePulseCounter();
+        }
+
         private void updatePauseState()
         {
             foreach (Player player in Map.Players)
@@ -663,7 +683,7 @@ namespace SGJ16
             }
             if (loadingProgress >= loadingProgressBar.Width)
             {
-                gameState = GameState.Normal;
+                gameState = GameState.Start;
                 MusicManager.Play();
             }
             updatePulseCounter();
