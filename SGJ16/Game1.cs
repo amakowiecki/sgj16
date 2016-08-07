@@ -11,7 +11,8 @@ namespace SGJ16
     {
         Normal,
         Paused,
-        Ended
+        Ended,
+        PreEnding
     }
 
     /// <summary>
@@ -47,8 +48,6 @@ namespace SGJ16
 
         Player winner = null;
         Player loser = null;
-
-        Missiles missiles;
 
         public Vector2 DisplayCenter
         {
@@ -213,7 +212,7 @@ namespace SGJ16
         {
             // TODO: Unload any non ContentManager content here
         }
-
+        
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -223,68 +222,30 @@ namespace SGJ16
         {
             keyboard.Update();
 
-            foreach (Player player in Map.Players)
+            switch (gameState)
             {
-                if (IsKeyPressed(player.Input, GameKey.Quit))
-                {
-                    Exit();
-                }
-                if (IsKeyDown(player.Input, GameKey.Pause))
-                {
-                    pauseGame();
+                case GameState.Normal:
+                    {
+                        updateNormalState(gameTime);
+                        break;
+                    }
+                case GameState.Paused:
+                    {
+                        updatePauseState();
+                        break;
+                    }
+                case GameState.Ended:
+                    {
+                        updateEndState();
+                        break;
+                    }
+                case GameState.PreEnding:
+                    {
+                        updatePreEndState();
+                        break;
+                    }
+                default:
                     break;
-                }
-            }
-
-            if (gameState != GameState.Ended)
-            {
-                if (gameState != GameState.Paused)
-                {
-                    if (checkWinLoseConditions())
-                    {
-                        gameState = GameState.Ended;
-                    }
-                    else
-                    {
-                        foreach (Missile missile in Map.missiles)
-                        {
-                            missile.Update();
-                        }
-
-                        if (Map.PowerUps.Count > 0)
-                        {
-                            for (var i = Map.PowerUps.Count - 1; i >= 0; i--)
-                            {
-                                var powerUp = Map.PowerUps[i];
-                                if (powerUp.rectangle.Intersects(player1.rect))
-                                {
-                                    powerUp.Take(player1, Map);
-                                }
-                                else if (powerUp.rectangle.Intersects(player2.rect))
-                                {
-                                    powerUp.Take(player2, Map);
-                                }
-                            }
-                        }
-
-                        foreach (var item in displayableItems)
-                        {
-                            item.Update();
-                        }
-
-                        UpdatePlayer(player1);
-                        UpdatePlayer(player2);
-                        PowerUpManager.Update(gameTime);
-                    }
-                }
-                else
-                {
-                    updatePulseCounter();
-                }
-            }
-            else
-            {
-                updatePulseCounter();
             }
 
             MusicManager.Update(gameTime);
@@ -524,6 +485,109 @@ namespace SGJ16
             }
 
             //player.Update();
+        }
+
+        private void updateEndState()
+        {
+            foreach (Player player in Map.Players)
+            {
+                if (IsKeyPressed(player.Input, GameKey.Quit))
+                {
+                    Exit();
+                }
+                if (IsKeyDown(player.Input, GameKey.Pause))
+                {
+                    restartGame();
+                    break;
+                }
+            }
+            updatePulseCounter();
+        }
+
+        private void updatePauseState()
+        {
+            foreach (Player player in Map.Players)
+            {
+                if (IsKeyPressed(player.Input, GameKey.Quit))
+                {
+                    Exit();
+                }
+                if (IsKeyDown(player.Input, GameKey.Pause))
+                {
+                    pauseGame();
+                    break;
+                }
+            }
+            updatePulseCounter();
+        }
+
+        private void updatePreEndState()
+        {
+            foreach (Player player in Map.Players)
+            {
+                if (IsKeyPressed(player.Input, GameKey.Quit))
+                {
+                    Exit();
+                }
+            }
+        }
+
+        private void updateNormalState(GameTime gameTime)
+        {
+            foreach (Player player in Map.Players)
+            {
+                if (IsKeyPressed(player.Input, GameKey.Quit))
+                {
+                    Exit();
+                }
+                if (IsKeyDown(player.Input, GameKey.Pause))
+                {
+                    pauseGame();
+                    break;
+                }
+            }
+
+            if (checkWinLoseConditions())
+            {
+                gameState = GameState.Ended;
+            }
+            else
+            {
+                foreach (Missile missile in Map.missiles)
+                {
+                    missile.Update();
+                }
+
+                if (Map.PowerUps.Count > 0)
+                {
+                    for (var i = Map.PowerUps.Count - 1; i >= 0; i--)
+                    {
+                        var powerUp = Map.PowerUps[i];
+                        if (powerUp.rectangle.Intersects(player1.rect))
+                        {
+                            powerUp.Take(player1, Map);
+                        }
+                        else if (powerUp.rectangle.Intersects(player2.rect))
+                        {
+                            powerUp.Take(player2, Map);
+                        }
+                    }
+                }
+
+                foreach (var item in displayableItems)
+                {
+                    item.Update();
+                }
+
+                UpdatePlayer(player1);
+                UpdatePlayer(player2);
+                PowerUpManager.Update(gameTime);
+            }
+        }
+
+        private void restartGame()
+        {
+
         }
     }
 }
