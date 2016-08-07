@@ -13,8 +13,8 @@ namespace SGJ16
     {
         static List<Song> songs;
         static int currentSongIdx;
-        static int timePlaying;
-        static int currentSongDuration;
+        static int timePlaying; //w milisekundach
+        static int currentSongDuration; //w milisekundach
         static Song menuSong;
         static bool menu;
 
@@ -58,7 +58,7 @@ namespace SGJ16
             {
                 return;
             }
-            timePlaying += (int) gametime.ElapsedGameTime.TotalSeconds;
+            timePlaying += (int) gametime.ElapsedGameTime.TotalMilliseconds;
 
             if (currentSongDuration <= timePlaying)
             {
@@ -68,11 +68,12 @@ namespace SGJ16
 
         private static void playNext()
         {
+            MediaPlayer.Stop();
             timePlaying = 0;
-            currentSongDuration = (int)songs[currentSongIdx].Duration.TotalSeconds;
+            currentSongDuration = (int)songs[currentSongIdx].Duration.TotalMilliseconds;
             MediaPlayer.Play(songs[currentSongIdx]);
            
-           // MediaPlayer.IsRepeating = true; 
+            // MediaPlayer.IsRepeating = true; 
             currentSongIdx++;
             if (currentSongIdx >= songs.Count)
             {
