@@ -197,6 +197,7 @@ namespace SGJ16
             Map.MapTexture = Content.Load<Texture2D>("background1st");
             Map.SetPlatforms();
 
+            SoundManager.Load(Content);
             MusicManager.Load(Content);
             PowerUpManager.map = Map;
             PowerUpManager.Load(Content);
@@ -428,6 +429,14 @@ namespace SGJ16
             if (IsKeyDown(player.Input, GameKey.Shot))
             {
                 CreateMissile(player);
+                if (player.missileModelType == MissileModelType.Strong)
+                {
+                    SoundManager.PlaySuperShot();
+                }
+                else
+                {
+                    SoundManager.PlayShot();
+                }
             }
         }
 

@@ -22,7 +22,7 @@ namespace SGJ16
         public const int DefaultPlayerWidth = Config.PLAYER_WIDTH;
         public const int DefaultSpeed = 10;
         public const int DefaultJumpSpeed = 15;
-        public const float DefaultHP = 100;
+        public const float DefaultHP = 200;
         public const int HeadSize = 20;
         public const int BodyHeight = 40;
         public const int LegHeight = DefaultPlayerHeight - HeadSize - BodyHeight;
@@ -77,7 +77,7 @@ namespace SGJ16
         public HpBar HpBar;
         public Aim Aim;
         public PlayerInput Input;
-        
+
         public Vector2 AbsoluteMissileOrigin
         {
             get
@@ -130,7 +130,7 @@ namespace SGJ16
                 new Rectangle((int) CurrentPosition.X + (PlayerWidth - HeadSize) / 2,
                 BoundingBoxes[HitBox.Body].Top, HeadSize, HeadSize));
             BoundingBoxes.Add(HitBox.Legs,
-                new Rectangle((int)CurrentPosition.X + (PlayerWidth - LegWidth) / 2, BoundingBoxes[HitBox.Body].Bottom, 
+                new Rectangle((int) CurrentPosition.X + (PlayerWidth - LegWidth) / 2, BoundingBoxes[HitBox.Body].Bottom,
                 LegWidth, LegHeight));
 
             Gun = new Gun(this);
@@ -139,7 +139,7 @@ namespace SGJ16
 
             Aim = new Aim(this);
             Input = new PlayerInput();
-        }        
+        }
 
         public void Draw(SpriteBatch batch)
         {
@@ -154,7 +154,7 @@ namespace SGJ16
 
             Gun.Draw(batch, Opacity);
         }
-        
+
         public void Update()
         {
             if ((currentFrameNumber >= textureChangeRate && CurrentState == State.Standing)
@@ -198,7 +198,7 @@ namespace SGJ16
             {
                 return false;
             }
-            
+
             if (isStandingOnAnything())
             {
                 CurrentState = State.InAir;
@@ -226,6 +226,7 @@ namespace SGJ16
             {
                 CurrentState = State.InAir;
                 CurrentJumpSpeed = DefaultJumpSpeed;
+                SoundManager.PlayJump();
             }
         }
 
@@ -253,6 +254,7 @@ namespace SGJ16
                     if (DamageModifiers.ContainsKey(boxInfo.Key))
                     {
                         float dmg = DamageModifiers[boxInfo.Key] * basicDamage;
+                        SoundManager.PlayHurt();
                         if (CurrentHp > dmg)
                         {
                             CurrentHp -= dmg;
@@ -263,6 +265,7 @@ namespace SGJ16
                         {
                             result = CurrentHp;
                             CurrentHp = 0;
+                            SoundManager.PlayDeath();
                             return true;
                         }
                     }
@@ -297,11 +300,14 @@ namespace SGJ16
         private bool isStandingOnAnything()
         {
             if (CurrentState == State.InAir) { return false; }
-            int playerBottom = (int)CurrentPosition.Y + PlayerHeight;
+            int playerBottom = (int) CurrentPosition.Y + PlayerHeight;
             int minFeetX = BoundingBoxes[HitBox.Legs].X;
             int maxFeetX = minFeetX + BoundingBoxes[HitBox.Legs].Width;
-            return !Map.Walls.Any(wall => { return wall.Top == 
-                playerBottom && minFeetX <= wall.Right && wall.Left <= maxFeetX; });
+            return !Map.Walls.Any(wall =>
+            {
+                return wall.Top ==
+playerBottom && minFeetX <= wall.Right && wall.Left <= maxFeetX;
+            });
         }
 
         /// <summary>
@@ -435,6 +441,7 @@ namespace SGJ16
                     IsFalling = false;
                     CurrentState = State.Standing;
                     currentTextureNumber = 0;
+                    SoundManager.PlayLand();
                 }
             }
             else
@@ -509,8 +516,8 @@ namespace SGJ16
         public void SetInitialPosition(bool isLeft)
         {
             CurrentPosition = new Vector2(
-                isLeft ? (float)Config.PLAYER_POSITION_X : Config.WINDOW_WIDTH - PlayerWidth - Config.PLAYER_POSITION_X,
-                (float)Config.WINDOW_HEIGHT - PlayerHeight - Config.GROUND_LEVEL);
+                isLeft ? (float) Config.PLAYER_POSITION_X : Config.WINDOW_WIDTH - PlayerWidth - Config.PLAYER_POSITION_X,
+                (float) Config.WINDOW_HEIGHT - PlayerHeight - Config.GROUND_LEVEL);
         }
 
         private void changePosition()
