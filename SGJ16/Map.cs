@@ -43,9 +43,9 @@ namespace SGJ16
             Walls.Add(newPlatform);
             newPlatform = new Rectangle(813, 353, 170, 26); //przy drzewie
             Walls.Add(newPlatform);
-            newPlatform = new Rectangle(0, 512, 151, 129);
+            newPlatform = new Rectangle(0, 512, 151, 129); //lewy dolny róg
             Walls.Add(newPlatform);
-            newPlatform = new Rectangle(1091, 503, 180, 139);
+            newPlatform = new Rectangle(1091, 503, 180, 139); //prawy dolny róg
             Walls.Add(newPlatform);
         }
 

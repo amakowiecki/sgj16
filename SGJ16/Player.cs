@@ -406,9 +406,7 @@ playerBottom && minFeetX <= wall.Right && wall.Left <= maxFeetX;
 
         private bool flyLikeAFuckingBird()
         {
-            //CurrentJumpSpeed = (CurrentJumpSpeed/(((framesInAir)/2)+1))+5;
             CurrentJumpSpeed = CurrentJumpSpeed * 2 / (int) Math.Ceiling(Math.Log(framesInAir + 2)) + 1;
-            // CurrentJumpSpeed -= 10 * ((framesInAir / 60) + 1);
             if (framesInAir >= MaxFramesInAir)
             {
                 IsFalling = true;

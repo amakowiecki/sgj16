@@ -54,7 +54,6 @@ namespace SGJ16
 
         AnimationManager animationManager;
 
-        string title;
         LoadingAnimation loadingAnimation;
         Rectangle loadingProgressBar;
         double loadingProgress = 0;
@@ -103,8 +102,6 @@ namespace SGJ16
         protected override void Initialize()
         {
             gameState = GameState.Loading;
-
-            title = "Wojownicze Żółwie Rambo";
 
             Aim.Initialize(Config.MIN_AIM_ANGLE, Config.MAX_AIM_ANGLE, Config.AIM_STEP, Config.DISTANCE);
             PowerUpManager.animationManager = animationManager;
@@ -362,9 +359,7 @@ namespace SGJ16
                 foreach (Player p in Map.Players)
                 {
                     DrawHpBar(p);
-                }
-
-                
+                }                
 
                 switch (gameState)
                 {
