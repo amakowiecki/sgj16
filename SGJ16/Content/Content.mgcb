@@ -1615,3 +1615,9 @@
 /processorParam:TextureFormat=Color
 /build:player2-2.png
 
+#begin menumusic.wav
+/importer:WavImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:menumusic.wav
+

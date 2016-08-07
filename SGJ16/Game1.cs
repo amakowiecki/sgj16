@@ -223,7 +223,7 @@ namespace SGJ16
             PowerUpManager.map = Map;
             PowerUpManager.Load(Content);
 
-            MusicManager.Play();
+            MusicManager.PlayMusicMenu();
         }
 
         /// <summary>
@@ -641,6 +641,7 @@ namespace SGJ16
             if (loadingProgress >= loadingProgressBar.Width)
             {
                 gameState = GameState.Normal;
+                MusicManager.Play();
             }
             updatePulseCounter();
         }
@@ -723,6 +724,8 @@ namespace SGJ16
 
             player1.Aim.Angle = 0;
             player2.Aim.Angle = 0;
+
+            Map.PowerUps.Clear();
 
             winner = null;
             loser = null;
