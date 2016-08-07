@@ -39,6 +39,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Aim.cs" />
+    <Compile Include="Animation.cs" />
     <Compile Include="Common\Angle.cs" />
     <Compile Include="Common\Config.cs" />
     <Compile Include="Common\Enums.cs" />
@@ -49,6 +50,7 @@
     <Compile Include="Keyboard\GameKey.cs" />
     <Compile Include="Keyboard\KeyboardInput.cs" />
     <Compile Include="Keyboard\PlayerInput.cs" />
+    <Compile Include="LoadingAnimation.cs" />
     <Compile Include="Missile.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="Missiles.cs" />

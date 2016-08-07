@@ -12,7 +12,9 @@ namespace SGJ16
         Normal,
         Paused,
         Ended,
-        PreEnding
+        PreEnding,
+        Loading,
+        Start
     }
 
     /// <summary>
@@ -50,6 +52,13 @@ namespace SGJ16
         Player winner = null;
         Player loser = null;
 
+        AnimationManager animationManager;
+
+        LoadingAnimation loadingAnimation;
+        Rectangle loadingProgressBar;
+        double loadingProgress = 0;
+        Random rng = new Random();
+
         public Vector2 DisplayCenter
         {
             get { return DisplaySize.ToVector2() / 2; }
@@ -65,6 +74,11 @@ namespace SGJ16
             //graphics.IsFullScreen = true;
 
             IsMouseVisible = true;
+
+            animationManager = new AnimationManager();
+            loadingAnimation = new LoadingAnimation(new Vector2((Config.WINDOW_WIDTH - LoadingAnimation.Width) / 2, -16));
+            loadingProgressBar = new Rectangle(new Point((Config.WINDOW_WIDTH - LoadingAnimation.Width) / 2, Config.WINDOW_HEIGHT - 72), 
+                new Point(LoadingAnimation.Width, 48));
 
             keyboard = new KeyboardInput();
 
@@ -86,7 +100,8 @@ namespace SGJ16
         /// </summary>
         protected override void Initialize()
         {
-            gameState = GameState.Normal;
+            //gameState = GameState.Normal;
+            gameState = GameState.Loading;
             Aim.Initialize(Config.MIN_AIM_ANGLE, Config.MAX_AIM_ANGLE, Config.AIM_STEP, Config.DISTANCE);
 
             HpBar.Ranges = new List<HpRange>
@@ -172,10 +187,16 @@ namespace SGJ16
             defaultFont = Content.Load<SpriteFont>("DefaultFont");
             defaultFontXl = Content.Load<SpriteFont>("DefaultFontXL");
 
+            loadingAnimation.Load(Content);
+
+            //animationManager.AddModel(AnimationType.Test, Content.Load<Texture2D>("testanim1"), 4);
+            //animationManager.AddSimpleAnimation(AnimationType.Test, Vector2.Zero, 10);
+            //animationManager.AddRepeatableAnimation(AnimationType.Test, new Vector2(128, 128), 10, 5);
+            //animationManager.AddLoopAnimation(AnimationType.Test, new Vector2(256, 256), 10);
+
             Map.missiles.Models[MissileModelType.Basic].Texture = Content.Load<Texture2D>("pocisk");
             Map.missiles.Models[MissileModelType.Strong].Texture = Content.Load<Texture2D>("superMissile");
             Map.missiles.Models[MissileModelType.Cone].Texture = Content.Load<Texture2D>("pocisk");
-
 
             HpBar.Textures[HpRangeType.Normal] = Content.Load<Texture2D>("hpbargreen");
             HpBar.Textures[HpRangeType.Low] = Content.Load<Texture2D>("hpbaryellow");
@@ -200,7 +221,6 @@ namespace SGJ16
             MusicManager.Load(Content);
             PowerUpManager.map = Map;
             PowerUpManager.Load(Content);
-
 
             MusicManager.Play();
         }
@@ -243,6 +263,11 @@ namespace SGJ16
                 case GameState.PreEnding:
                     {
                         updatePreEndState();
+                        break;
+                    }
+                case GameState.Loading:
+                    {
+                        updateLoadingState();
                         break;
                     }
                 default:
@@ -296,52 +321,55 @@ namespace SGJ16
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(new Color(96, 96, 96));
-
             spriteBatch.Begin();
 
-            foreach (var item in displayableItems)
+            if (gameState == GameState.Loading)
             {
-                item.Draw(spriteBatch);
+                drawLoadingScreen();
             }
-            foreach (var powerUp in Map.PowerUps)
+            else
             {
-                powerUp.Draw(spriteBatch);
-            }
-            foreach (Missile missile in Map.missiles)
-            {
-                missile.Draw(spriteBatch);
-            }
+                //GraphicsDevice.Clear(new Color(96, 96, 96));
+                foreach (var item in displayableItems)
+                {
+                    item.Draw(spriteBatch);
+                }
+                foreach (var powerUp in Map.PowerUps)
+                {
+                    powerUp.Draw(spriteBatch);
+                }
+                foreach (Missile missile in Map.missiles)
+                {
+                    missile.Draw(spriteBatch);
+                }
 
-            //Aim aim = player1.Aim;
-            //spriteBatch.Draw(aim.Texture, aim.Position - aim.Texture.GetHalfSize(), Color.White);
-            //aim = player2.Aim;
-            //spriteBatch.Draw(aim.Texture, aim.Position - aim.Texture.GetHalfSize(), Color.White);
+                foreach (Player p in Map.Players)
+                {
+                    DrawHpBar(p);
+                }
 
-            foreach (Player p in Map.Players)
-            {
-                DrawHpBar(p);
-            }
+                animationManager.Draw(spriteBatch);
 
-            switch (gameState)
-            {
-                case GameState.Paused:
-                    {
-                        drawPauseScreen();
+                switch (gameState)
+                {
+                    case GameState.Paused:
+                        {
+                            drawPauseScreen();
+                            break;
+                        }
+                    case GameState.Ended:
+                        {
+                            drawEndScreen();
+                            break;
+                        }
+                    case GameState.PreEnding:
+                        {
+                            drawPreEndScreen();
+                            break;
+                        }
+                    default:
                         break;
-                    }
-                case GameState.Ended:
-                    {
-                        drawEndScreen();
-                        break;
-                    }
-                case GameState.PreEnding:
-                    {
-                        drawPreEndScreen();
-                        break;
-                    }
-                default:
-                    break;
+                }
             }
 
             spriteBatch.End();
@@ -467,6 +495,21 @@ namespace SGJ16
                 StaticMethods.CenterTextX(defaultFont, text), 400), Color.White, 2.0f, Color.Black, opacity);
         }
 
+        private void drawLoadingScreen()
+        {
+            GraphicsDevice.Clear(Color.White);
+            loadingAnimation.Draw(spriteBatch);
+            Texture2D temp = new Texture2D(GraphicsDevice, 1, 1);
+            temp.SetData(new Color[] { new Color(128, 128, 128) });
+            spriteBatch.Draw(temp, new Rectangle(loadingProgressBar.X, loadingProgressBar.Y,
+                (int)loadingProgress, loadingProgressBar.Height), Color.White);
+            float min = 0.3f;
+            float opacity = min + (float)pulseCounter / maxPulse * (1 - min);
+            spriteBatch.DrawString(defaultFont, "Loading",
+                new Vector2(StaticMethods.CenterTextX(defaultFont, "Loading"), 532),
+                Color.Black * opacity);
+        }
+
         private void drawPauseScreen()
         {
             tintScreen(Color.Black * pauseTintMaxValue);
@@ -574,6 +617,23 @@ namespace SGJ16
                 loser.HpBar.Update();
                 loser.Opacity = 1.0f;
             }
+
+            animationManager.Update();
+        }
+
+        private void updateLoadingState()
+        {
+            loadingAnimation.Update();
+            loadingProgress += (rng.Next(40) - rng.Next(20) + rng.Next(10) + rng.Next(10)) / 20;
+            if (loadingProgress > loadingProgressBar.Width / 3)
+            {
+                loadingProgress += rng.Next(20) - rng.Next(10) + rng.Next(10);
+            }
+            if (loadingProgress >= loadingProgressBar.Width)
+            {
+                gameState = GameState.Normal;
+            }
+            updatePulseCounter();
         }
 
         private void updateNormalState(GameTime gameTime)
@@ -630,6 +690,7 @@ namespace SGJ16
 
                 UpdatePlayer(player1);
                 UpdatePlayer(player2);
+                animationManager.Update();
                 PowerUpManager.Update(gameTime);
             }
         }
