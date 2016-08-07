@@ -213,61 +213,76 @@ namespace SGJ16
             keyboard.Update();
 
             foreach (Player player in Map.Players)
-                if (gameState != GameState.Ended)
+            {
+                if (IsKeyPressed(player.Input, GameKey.Quit))
                 {
-                    if (gameState != GameState.Paused)
+                    Exit();
+                }
+
+                foreach (var item in displayableItems)
+                {
+                    item.Update();
+                    if (IsKeyDown(player.Input, GameKey.Pause))
                     {
-                        if (checkWinLoseConditions())
-                        {
-                            gameState = GameState.Ended;
-                        }
-                        else
-                        {
-                            foreach (Missile missile in Map.missiles)
-                            {
-                                missile.Update();
-                            }
+                        pauseGame();
+                        break;
+                    }
+                }
+            }
 
-                            foreach (var item in displayableItems)
-                            {
-                                item.Update();
-                            }
-
-                            UpdatePlayer(player1);
-                            UpdatePlayer(player2);
-
-                            if (Map.PowerUps.Count > 0)
-                            {
-                                for (var i = Map.PowerUps.Count - 1; i >= 0; i--)
-                                {
-                                    var powerUp = Map.PowerUps[i];
-                                    if (powerUp.rectangle.Intersects(player1.rect))
-                                    {
-                                        powerUp.Take(player1, Map);
-                                    }
-                                    else if (powerUp.rectangle.Intersects(player2.rect))
-                                    {
-                                        powerUp.Take(player2, Map);
-                                    }
-                                }
-                            }
-                            //PowerUpManager.SpawnPowerUps();
-
-                            PowerUpManager.Update(gameTime);
-                            MusicManager.Update(gameTime);
-                            base.Update(gameTime);
-                        }
+            if (gameState != GameState.Ended)
+            {
+                if (gameState != GameState.Paused)
+                {
+                    if (checkWinLoseConditions())
+                    {
+                        gameState = GameState.Ended;
                     }
                     else
                     {
-                        updatePulseCounter();
+                        foreach (Missile missile in Map.missiles)
+                        {
+                            missile.Update();
+                        }
+
+                        foreach (var item in displayableItems)
+                        {
+                            item.Update();
+                        }
+
+                        UpdatePlayer(player1);
+                        UpdatePlayer(player2);
+
+                        if (Map.PowerUps.Count > 0)
+                        {
+                            for (var i = Map.PowerUps.Count - 1; i >= 0; i--)
+                            {
+                                var powerUp = Map.PowerUps[i];
+                                if (powerUp.rectangle.Intersects(player1.rect))
+                                {
+                                    powerUp.Take(player1, Map);
+                                }
+                                else if (powerUp.rectangle.Intersects(player2.rect))
+                                {
+                                    powerUp.Take(player2, Map);
+                                }
+                            }
+                        }
+
+                        PowerUpManager.Update(gameTime);
                     }
                 }
                 else
                 {
                     updatePulseCounter();
                 }
+            }
+            else
+            {
+                updatePulseCounter();
+            }
 
+            MusicManager.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -394,7 +409,7 @@ namespace SGJ16
         private void UpdateAim(Player player)
         {
             bool upPressed = IsKeyPressed(player.Input, GameKey.LookUp);
-        bool downPressed = IsKeyPressed(player.Input, GameKey.LookDown);
+            bool downPressed = IsKeyPressed(player.Input, GameKey.LookDown);
             if (upPressed && !downPressed)
             {
                 player.Aim.DecreaseAngle();
@@ -410,72 +425,72 @@ namespace SGJ16
         }
 
         private void DrawHpBar(Player player)
-{
-    HpBar bar = player.HpBar;
-    spriteBatch.Draw(HpBar.BackTexture, bar.Position, Color.White);
-    Texture2D texture = bar.Texture;
-    if (texture != null)
-    {
-        float width = bar.VisibleHpPercentage * texture.Width;
-        spriteBatch.Draw(texture, bar.Position, new Rectangle(0, 0, (int)width, texture.Height), Color.White);
-        spriteBatch.DrawOutlinedString(defaultFont, player.Name, bar.Position
-            + new Vector2(player.IsLeft ? 0 : texture.Width - defaultFont.MeasureString(player.Name).X,
-            16 + texture.Height), Color.White, 2.0f, Color.Black, 1.0f);
-    }
-}
+        {
+            HpBar bar = player.HpBar;
+            spriteBatch.Draw(HpBar.BackTexture, bar.Position, Color.White);
+            Texture2D texture = bar.Texture;
+            if (texture != null)
+            {
+                float width = bar.VisibleHpPercentage * texture.Width;
+                spriteBatch.Draw(texture, bar.Position, new Rectangle(0, 0, (int)width, texture.Height), Color.White);
+                spriteBatch.DrawOutlinedString(defaultFont, player.Name, bar.Position
+                    + new Vector2(player.IsLeft ? 0 : texture.Width - defaultFont.MeasureString(player.Name).X,
+                    16 + texture.Height), Color.White, 2.0f, Color.Black, 1.0f);
+            }
+        }
 
-private void drawEndScreen()
-{
-    tintScreen(Color.Black * 0.85f);
-    string text = "Koniec gry";
-    float min = 0.3f;
-    float opacity = min + (float)pulseCounter / maxPulse * (1 - min);
-    spriteBatch.DrawOutlinedString(defaultFontXl, text, new Vector2(
-        StaticMethods.CenterTextX(defaultFontXl, text), 256), Color.White, 2.0f, Color.Black, opacity);
-    text = "Gracz \'" + winner.Name + "\' wins.";
-    spriteBatch.DrawOutlinedString(defaultFont, text, new Vector2(
-        StaticMethods.CenterTextX(defaultFont, text), 360), Color.White, 2.0f, Color.Black, opacity);
-    text = "Wciśnij \'Space\', aby continue.";
-    spriteBatch.DrawOutlinedString(defaultFont, text, new Vector2(
-        StaticMethods.CenterTextX(defaultFont, text), 400), Color.White, 2.0f, Color.Black, opacity);
-}
+        private void drawEndScreen()
+        {
+            tintScreen(Color.Black * 0.85f);
+            string text = "Koniec gry";
+            float min = 0.3f;
+            float opacity = min + (float)pulseCounter / maxPulse * (1 - min);
+            spriteBatch.DrawOutlinedString(defaultFontXl, text, new Vector2(
+                StaticMethods.CenterTextX(defaultFontXl, text), 256), Color.White, 2.0f, Color.Black, opacity);
+            text = "Gracz \'" + winner.Name + "\' wins.";
+            spriteBatch.DrawOutlinedString(defaultFont, text, new Vector2(
+                StaticMethods.CenterTextX(defaultFont, text), 360), Color.White, 2.0f, Color.Black, opacity);
+            text = "Wciśnij \'Space\', aby continue.";
+            spriteBatch.DrawOutlinedString(defaultFont, text, new Vector2(
+                StaticMethods.CenterTextX(defaultFont, text), 400), Color.White, 2.0f, Color.Black, opacity);
+        }
 
-private void drawPauseScreen()
-{
-    tintScreen(Color.Black * 0.85f);
-    string text = "Pauza";
-    float min = 0.3f;
-    float opacity = min + (float)pulseCounter / maxPulse * (1 - min);
-    spriteBatch.DrawOutlinedString(defaultFontXl, text, new Vector2(
-        StaticMethods.CenterTextX(defaultFontXl, text), 280), Color.White, 2.0f, Color.Black, opacity);
-    text = "Press \'Spacja\' to continue.";
-    spriteBatch.DrawOutlinedString(defaultFont, text, new Vector2(
-        StaticMethods.CenterTextX(defaultFont, text), 390), Color.White, 2.0f, Color.Black, opacity);
-}
+        private void drawPauseScreen()
+        {
+            tintScreen(Color.Black * 0.85f);
+            string text = "Pauza";
+            float min = 0.3f;
+            float opacity = min + (float)pulseCounter / maxPulse * (1 - min);
+            spriteBatch.DrawOutlinedString(defaultFontXl, text, new Vector2(
+                StaticMethods.CenterTextX(defaultFontXl, text), 280), Color.White, 2.0f, Color.Black, opacity);
+            text = "Press \'Spacja\' to continue.";
+            spriteBatch.DrawOutlinedString(defaultFont, text, new Vector2(
+                StaticMethods.CenterTextX(defaultFont, text), 390), Color.White, 2.0f, Color.Black, opacity);
+        }
 
-private void UpdatePlayer(Player player)
-{
-    PlayerInput pInput = player.Input;
-    UpdateAim(player);
+        private void UpdatePlayer(Player player)
+        {
+            PlayerInput pInput = player.Input;
+            UpdateAim(player);
 
-    if (IsKeyPressed(pInput, GameKey.MoveLeft))
-    {
-        player.Move(Direction.Left);
-    }
-    else if (IsKeyPressed(pInput, GameKey.MoveRight))
-    {
-        player.Move(Direction.Right);
-    }
-    else if (player.CurrentState != State.InAir)
-    {
-        player.CurrentState = State.Standing;
-    }
-    if (IsKeyDown(pInput, GameKey.Jump))
-    {
-        player.Jump();
-    }
+            if (IsKeyPressed(pInput, GameKey.MoveLeft))
+            {
+                player.Move(Direction.Left);
+            }
+            else if (IsKeyPressed(pInput, GameKey.MoveRight))
+            {
+                player.Move(Direction.Right);
+            }
+            else if (player.CurrentState != State.InAir)
+            {
+                player.CurrentState = State.Standing;
+            }
+            if (IsKeyDown(pInput, GameKey.Jump))
+            {
+                player.Jump();
+            }
 
-    //player.Update();
-}
+            //player.Update();
+        }
     }
 }
