@@ -212,7 +212,7 @@ namespace SGJ16
                 - HpBar.BackTexture.Width, HpBarPosition.Y);
 
             player1.playerTexture = Content.Load<Texture2D>("idle");
-            player2.playerTexture = Content.Load<Texture2D>("player2");
+            player2.playerTexture = Content.Load<Texture2D>("player2-2");
             var gunTexture = Content.Load<Texture2D>("weapon");
             player1.Gun.Texture = gunTexture;
             player2.Gun.Texture = gunTexture;
@@ -228,7 +228,7 @@ namespace SGJ16
             PowerUpManager.map = Map;
             PowerUpManager.Load(Content);
 
-            MusicManager.Play();
+            MusicManager.PlayMusicMenu();
         }
 
         /// <summary>
@@ -664,6 +664,7 @@ namespace SGJ16
             if (loadingProgress >= loadingProgressBar.Width)
             {
                 gameState = GameState.Normal;
+                MusicManager.Play();
             }
             updatePulseCounter();
         }
@@ -746,6 +747,8 @@ namespace SGJ16
 
             player1.Aim.Angle = 0;
             player2.Aim.Angle = 0;
+
+            Map.PowerUps.Clear();
 
             winner = null;
             loser = null;

@@ -89,7 +89,7 @@ namespace SGJ16
 
         public static void PlayHurt()
         {
-            if (RNG.Next(20)==4)
+            if (RNG.Next(30)==4)
             {
                 pojebalo.Play();
             }

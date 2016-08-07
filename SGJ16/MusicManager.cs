@@ -15,9 +15,12 @@ namespace SGJ16
         static int currentSongIdx;
         static int timePlaying;
         static int currentSongDuration;
+        static Song menuSong;
+        static bool menu;
 
         public static void Load(ContentManager content)
         {
+            menuSong = content.Load<Song>("menumusic");
             songs = new List<Song>();
             //var newSong = content.Load<Song>("muzykawalki");
             var newSong = content.Load<Song>("sabrepulse/1");
@@ -32,8 +35,18 @@ namespace SGJ16
             songs.Add(newSong);
         }
 
+        public static void PlayMusicMenu()
+        {
+            MediaPlayer.IsRepeating = true;
+            menu = true;
+            MediaPlayer.Play(menuSong);
+        }
+
         public static void Play()
         {
+            MediaPlayer.Stop();
+            menu = false;
+            MediaPlayer.IsRepeating = false;
             MediaPlayer.Volume = 0.3f;
             currentSongIdx = 0;
             playNext();
@@ -41,6 +54,10 @@ namespace SGJ16
 
         public static void Update(GameTime gametime) 
         {
+            if (menu)
+            {
+                return;
+            }
             timePlaying += (int) gametime.ElapsedGameTime.TotalSeconds;
 
             if (currentSongDuration <= timePlaying)
