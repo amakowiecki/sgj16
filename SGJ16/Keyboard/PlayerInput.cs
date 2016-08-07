@@ -22,6 +22,7 @@ namespace SGJ16
             mapping.Add(GameKey.Shot, Keys.Space);
             mapping.Add(GameKey.Pause, Keys.Space);
             mapping.Add(GameKey.Quit, Keys.Space);
+            mapping.Add(GameKey.Skip, Keys.Multiply);
         }
 
         public Keys GetKey(GameKey key)

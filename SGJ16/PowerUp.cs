@@ -88,6 +88,10 @@ namespace SGJ16
             model = new PowerUpModel(content.Load<Texture2D>("gumy"), DmgUp, content.Load<SoundEffect>("dmgUp"));
             PowerUpModels.Add(model);
 
+            //coneDmg
+            model = new PowerUpModel(content.Load<Texture2D>("tama"), DmgCone, content.Load<SoundEffect>("coneDmg"));
+            PowerUpModels.Add(model);
+
             //invulnerability
             model = new PowerUpModel(content.Load<Texture2D>("star"), MakeInvulnerable, content.Load<SoundEffect>("Invulnerable"));
             PowerUpModels.Add(model);
