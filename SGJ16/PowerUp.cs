@@ -155,10 +155,13 @@ namespace SGJ16
         private static void spawnPowerUps()
         {
             frameCount++;
-            if ((map.PowerUps.Count >= PowerUpNumberLimit)
-                || frameCount < nextPowerUpFrame)
+            if (frameCount < nextPowerUpFrame)
             {
                 return;
+            }
+            if (map.PowerUps.Count >= PowerUpNumberLimit)
+            {
+                map.PowerUps.RemoveAt(0);
             }
 
             var newPowerUpModel = PowerUpModels[RNG.Next(PowerUpModels.Count)];
