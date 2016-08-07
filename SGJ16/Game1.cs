@@ -28,9 +28,7 @@ namespace SGJ16
 
         HpBar p1HpBar;
         HpBar p2HpBar;
-        public static Vector2 HpBarPosition = new Vector2(36, 36);
-
-        Missiles missiles;
+        public static Vector2 HpBarPosition = new Vector2(36, 36);        
 
         public Vector2 DisplayCenter
         {
@@ -57,7 +55,7 @@ namespace SGJ16
             p2HpBar = new HpBar(player2);
 
             Map = new Map();
-            missiles = new Missiles(Map, 60);
+            Map.missiles = new Missiles(Map, 60);
         }
 
         /// <summary>
@@ -77,7 +75,7 @@ namespace SGJ16
                 new HpRange { UpperBound = 0.2f, Type = HpRangeType.VeryLow }
             };
 
-            missiles.Models.Add(MissileModelType.Basic,
+            Map.missiles.Models.Add(MissileModelType.Basic,
                 new MissileModel
                 {
                     MaxDistance = 640,
@@ -85,6 +83,15 @@ namespace SGJ16
                     Radius = 4,
                     InitialDistance = 50,
                     Damage = 10
+                });
+            Map.missiles.Models.Add(MissileModelType.Strong,
+                new MissileModel
+                {
+                    MaxDistance = 640,
+                    Speed = 8.0f,
+                    Radius = 6,
+                    InitialDistance = 50,
+                    Damage = 20
                 });
 
             player2.Input.SetKey(GameKey.MoveLeft, Keys.Left);
@@ -130,7 +137,8 @@ namespace SGJ16
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            missiles.Models[MissileModelType.Basic].Texture = Content.Load<Texture2D>("pocisk");
+            Map.missiles.Models[MissileModelType.Basic].Texture = Content.Load<Texture2D>("pocisk");
+            Map.missiles.Models[MissileModelType.Strong].Texture = Content.Load<Texture2D>("superMissile");
 
             HpBar.Textures[HpRangeType.Normal] = Content.Load<Texture2D>("hpbargreen");
             HpBar.Textures[HpRangeType.Low] = Content.Load<Texture2D>("hpbaryellow");
@@ -178,7 +186,7 @@ namespace SGJ16
         {
             keyboard.Update();
 
-            foreach (Missile missile in missiles)
+            foreach (Missile missile in Map.missiles)
             {
                 missile.Update();
             }
@@ -230,7 +238,7 @@ namespace SGJ16
             {
                 powerUp.Draw(spriteBatch);
             }
-            foreach (Missile missile in missiles)
+            foreach (Missile missile in Map.missiles)
             {
                 missile.Draw(spriteBatch);
             }
@@ -263,27 +271,27 @@ namespace SGJ16
             return keyboard.IsKeyDown(playerInput.GetKey(key));
         }
 
-        private void CreateMissile(Aim aim)
+        private void CreateMissile(Player player)
         {
-            missiles.InitializeMissile(MissileModelType.Basic, aim.Player.AbsoluteMissileOrigin,
-                Config.MISSILE_FORCE * aim.GetMissileVelocity());
+            Map.missiles.InitializeMissile(player.missileModelType, player.AbsoluteMissileOrigin,
+                Config.MISSILE_FORCE * player.Aim.GetMissileVelocity());
         }
 
-        private void UpdateAim(Aim aim, PlayerInput playerInput)
+        private void UpdateAim(Player player)
         {
-            bool upPressed = IsKeyPressed(playerInput, GameKey.LookUp);
-            bool downPressed = IsKeyPressed(playerInput, GameKey.LookDown);
+            bool upPressed = IsKeyPressed(player.Input, GameKey.LookUp);
+            bool downPressed = IsKeyPressed(player.Input, GameKey.LookDown);
             if (upPressed && !downPressed)
             {
-                aim.DecreaseAngle();
+                player.Aim.DecreaseAngle();
             }
             else if (downPressed && !upPressed)
             {
-                aim.IncreaseAngle();
+                player.Aim.IncreaseAngle();
             }
-            if (IsKeyDown(playerInput, GameKey.Shot))
+            if (IsKeyDown(player.Input, GameKey.Shot))
             {
-                CreateMissile(aim);
+                CreateMissile(player);
             }
         }
 
@@ -301,7 +309,7 @@ namespace SGJ16
         private void UpdatePlayer(Player player)
         {
             PlayerInput pInput = player.Input;
-            UpdateAim(player.Aim, pInput);
+            UpdateAim(player);
 
             if (IsKeyPressed(pInput, GameKey.Quit))
             {

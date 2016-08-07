@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SGJ16
 {
-    public delegate void PowerUpEffect(Player player, PowerUp powerUp);
+    public delegate void PowerUpEffect(Player player);
     public class PowerUpModel
     {
         public Texture2D Texture;
@@ -47,7 +47,7 @@ namespace SGJ16
 
         public void Take(Player player, Map map)
         {
-            model.Effect.Invoke(player, this);
+            model.Effect.Invoke(player);
             model.Sound.Play();
             map.PowerUps.Remove(this);
         }
@@ -60,6 +60,7 @@ namespace SGJ16
         public const int SpeedModifier = 10;
         public const int Heal = 25;
         public const int SpeedUpTime = 5 * 1000; //milisekundy
+        public const int DmgUpTime = 5 * 1000;
 
         public const int PowerUpNumberLimit = 10;
         public const int PowerUpSpawnMin = 60; //w klatkach
@@ -82,7 +83,10 @@ namespace SGJ16
             model = new PowerUpModel(content.Load<Texture2D>("speed"), SpeedUp, content.Load<SoundEffect>("SpeedUp"));
             PowerUpModels.Add(model);
 
-            //
+            //dmgUp
+            model = new PowerUpModel(content.Load<Texture2D>("gumy"), DmgUp, content.Load<SoundEffect>("dmgUp"));
+            PowerUpModels.Add(model);
+
         }
 
         private static void findEmptySpace(PowerUp powerUp)
@@ -135,7 +139,7 @@ namespace SGJ16
                 if (effect.CheckEffect(gametime))
                 {
                     AwaitingEffects.Remove(effect);
-                }                
+                }
             }
         }
 
@@ -158,20 +162,31 @@ namespace SGJ16
 
         //---Efekty powerUpów---
 
-        public static void HealEffect(Player player, PowerUp powerUp)
+        public static void HealEffect(Player player)
         {
             player.Heal(Heal);
         }
 
-        public static void SpeedUp(Player player, PowerUp powerUp)
+        public static void SpeedUp(Player player)
         {
             player.CurrentSpeed += SpeedModifier;
-            AwaitingEffects.Add(new EffectArgs(SpeedDown, SpeedUpTime, player, powerUp));
+            AwaitingEffects.Add(new EffectArgs(SpeedDown, SpeedUpTime, player));
         }
 
-        public static void SpeedDown(Player player, PowerUp powerUp)
+        public static void SpeedDown(Player player)
         {
             player.CurrentSpeed -= SpeedModifier;
+        }
+
+        public static void DmgUp(Player player)
+        {
+            player.missileModelType = MissileModelType.Strong;
+            AwaitingEffects.Add(new EffectArgs(DmgRegular, DmgUpTime, player));
+        }
+
+        public static void DmgRegular(Player player)
+        {
+            player.missileModelType = MissileModelType.Basic;
         }
 
     }
@@ -181,14 +196,12 @@ namespace SGJ16
         PowerUpEffect effect;
         int secondsToInvoke;
         Player player;
-        PowerUp powerUp;
 
-        public EffectArgs(PowerUpEffect effect, int seconds, Player player, PowerUp powerUp)
+        public EffectArgs(PowerUpEffect effect, int seconds, Player player)
         {
             this.effect = effect;
             this.secondsToInvoke = seconds;
             this.player = player;
-            this.powerUp = powerUp;
         }
 
         public bool CheckEffect(GameTime gameTime)
@@ -196,7 +209,7 @@ namespace SGJ16
             secondsToInvoke -= gameTime.ElapsedGameTime.Milliseconds;
             if (secondsToInvoke <= 0)
             {
-                this.effect.Invoke(player, powerUp);
+                this.effect.Invoke(player);
                 return true;
             }
             return false;
