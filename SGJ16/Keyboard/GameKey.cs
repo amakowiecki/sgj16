@@ -15,6 +15,7 @@ namespace SGJ16
         Jump,
         Shot,
         Pause,
-        Quit
+        Quit,
+        Skip
     }
 }

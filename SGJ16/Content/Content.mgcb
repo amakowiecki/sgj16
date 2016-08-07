@@ -1621,7 +1621,9 @@
 /processorParam:Quality=Best
 /build:menumusic.wav
 
+
 #begin explodesmall.png
+#begin player1-2.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1634,6 +1636,9 @@
 /build:explodesmall.png
 
 #begin ../../../images/explodesmall.png
+/build:player1-2.png
+
+#begin tama.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -1656,4 +1661,11 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:sparkle.png
+/build:tama.png
+
+#begin coneDmg.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:coneDmg.wav
 

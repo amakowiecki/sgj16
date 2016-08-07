@@ -79,7 +79,7 @@ namespace SGJ16
             animationManager = new AnimationManager();
             Missile.AnimationManager = animationManager;
             loadingAnimation = new LoadingAnimation(new Vector2((Config.WINDOW_WIDTH - LoadingAnimation.Width) / 2, -16));
-            loadingProgressBar = new Rectangle(new Point((Config.WINDOW_WIDTH - LoadingAnimation.Width) / 2, Config.WINDOW_HEIGHT - 72), 
+            loadingProgressBar = new Rectangle(new Point((Config.WINDOW_WIDTH - LoadingAnimation.Width) / 2, Config.WINDOW_HEIGHT - 72),
                 new Point(LoadingAnimation.Width, 48));
 
             keyboard = new KeyboardInput();
@@ -151,6 +151,7 @@ namespace SGJ16
             player2.Input.SetKey(GameKey.Shot, Keys.Delete);
             player2.Input.SetKey(GameKey.Pause, Keys.Space);
             player2.Input.SetKey(GameKey.Quit, Keys.Escape);
+            player2.Input.SetKey(GameKey.Skip, Keys.OemComma);
 
             player1.Input.SetKey(GameKey.MoveLeft, Keys.A);
             player1.Input.SetKey(GameKey.MoveRight, Keys.D);
@@ -210,7 +211,7 @@ namespace SGJ16
             p2HpBar.Position = new Vector2(Config.WINDOW_WIDTH - HpBarPosition.X
                 - HpBar.BackTexture.Width, HpBarPosition.Y);
 
-            player1.playerTexture = Content.Load<Texture2D>("idle");
+            player1.playerTexture = Content.Load<Texture2D>("player1-2");
             player2.playerTexture = Content.Load<Texture2D>("player2-2");
             var gunTexture = Content.Load<Texture2D>("weapon");
             player1.Gun.Texture = gunTexture;
@@ -238,7 +239,7 @@ namespace SGJ16
         {
             // TODO: Unload any non ContentManager content here
         }
-        
+
         /// <summary>
         /// Allows the game to run logic such as updating the world,
         /// checking for collisions, gathering input, and playing audio.
@@ -524,9 +525,9 @@ namespace SGJ16
             Texture2D temp = new Texture2D(GraphicsDevice, 1, 1);
             temp.SetData(new Color[] { new Color(128, 128, 128) });
             spriteBatch.Draw(temp, new Rectangle(loadingProgressBar.X, loadingProgressBar.Y,
-                (int)loadingProgress, loadingProgressBar.Height), Color.White);
+                (int) loadingProgress, loadingProgressBar.Height), Color.White);
             float min = 0.3f;
-            float opacity = min + (float)pulseCounter / maxPulse * (1 - min);
+            float opacity = min + (float) pulseCounter / maxPulse * (1 - min);
             spriteBatch.DrawString(defaultFont, "Loading",
                 new Vector2(StaticMethods.CenterTextX(defaultFont, "Loading"), 532),
                 Color.Black * opacity);
@@ -676,6 +677,12 @@ namespace SGJ16
 
         private void updateLoadingState()
         {
+            if (keyboard.IsKeyDown(Keys.Back))
+            {
+                gameState = GameState.Normal;
+                return;
+            }
+
             loadingAnimation.Update();
             loadingProgress += (rng.Next(40) - rng.Next(20) + rng.Next(10) + rng.Next(10)) / 20;
             if (loadingProgress > loadingProgressBar.Width / 3)
