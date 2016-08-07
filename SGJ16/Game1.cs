@@ -647,6 +647,15 @@ namespace SGJ16
             player1.CurrentSpeed = Player.DefaultSpeed;
             player2.CurrentSpeed = Player.DefaultSpeed;
 
+            player1.Opacity = 1.0f;
+            player2.Opacity = 1.0f;
+
+            player1.Aim.Angle = 0;
+            player2.Aim.Angle = 0;
+
+            winner = null;
+            loser = null;
+
             gameState = GameState.Normal;
         }
     }
